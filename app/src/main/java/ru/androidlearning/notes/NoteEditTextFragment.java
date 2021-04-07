@@ -2,12 +2,16 @@ package ru.androidlearning.notes;
 
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+
+import java.util.Objects;
 
 import ru.androidlearning.notes.models.GetNotes;
 import ru.androidlearning.notes.models.Notes;
@@ -36,19 +40,24 @@ public class NoteEditTextFragment extends Fragment {
         }
     }
 
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View noteEditTextView = inflater.inflate(R.layout.fragment_note_edit_text, container, false);
-        TextView noteDate = noteEditTextView.findViewById(R.id.noteDate);
-        TextView noteTitle = noteEditTextView.findViewById(R.id.noteTitle);
-        TextView noteText = noteEditTextView.findViewById(R.id.noteText);
+        View noteEditTextFragment = inflater.inflate(R.layout.fragment_note_edit_text, container, false);
+        TextView noteDate = noteEditTextFragment.findViewById(R.id.noteDate);
+        TextView noteTitle = noteEditTextFragment.findViewById(R.id.noteTitle);
+        TextView noteText = noteEditTextFragment.findViewById(R.id.noteText);
 
         noteDate.setText(GetNotes.getNotes().getNoteFormattedCreatedDateAsStringByIndex(currentIndexOfNote));
         noteTitle.setText(GetNotes.getNotes().getNoteTitleByIndex(currentIndexOfNote));
         noteText.setText(GetNotes.getNotes().getNoteTextByIndex(currentIndexOfNote));
 
-        return noteEditTextView;
+        noteEditTextFragment.findViewById(R.id.saveAndCloseButton).setOnClickListener(v -> Objects.requireNonNull(getActivity()).onBackPressed());
+
+        return noteEditTextFragment;
     }
+
+
 }

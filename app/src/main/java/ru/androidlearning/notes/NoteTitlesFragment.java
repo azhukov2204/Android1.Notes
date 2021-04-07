@@ -1,10 +1,13 @@
 package ru.androidlearning.notes;
 
+import android.content.res.Configuration;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,9 +16,10 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import java.util.List;
+import java.util.Objects;
+import java.util.concurrent.locks.Condition;
 
 import ru.androidlearning.notes.models.GetNotes;
-import ru.androidlearning.notes.models.Notes;
 
 
 public class NoteTitlesFragment extends Fragment {
@@ -48,13 +52,30 @@ public class NoteTitlesFragment extends Fragment {
             noteTitleView.setText(noteTitle);
             noteTitlesLinearLayout.addView(noteTitleItemLayout);
             final int finalNoteTitleIndex = noteTitleIndex;
+
             noteTitleItemLayout.setOnClickListener(v -> {
                 currentIndexOfNote = finalNoteTitleIndex;
-                System.out.println("finalNoteTitleIndex = " + finalNoteTitleIndex);
+                openNoteTextFragment(view);
             });
             noteTitleIndex++;
         }
-
-
     }
+
+    private void openNoteTextFragment(View view) {
+        NoteEditTextFragment noteEditTextFragment = NoteEditTextFragment.newInstance(currentIndexOfNote);
+        FragmentManager fragmentManager = requireActivity().getSupportFragmentManager();
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+
+        if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
+            Objects.requireNonNull(getActivity()).findViewById(R.id.nothingSelectedTextView).setVisibility(View.GONE);
+            fragmentTransaction.replace(R.id.noteTextFragmentContainer, noteEditTextFragment);
+        } else {
+            fragmentTransaction.replace(R.id.noteMainFragmentContainer, noteEditTextFragment).addToBackStack("fragment_note_titles");
+        }
+
+
+        fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
+        fragmentTransaction.commit();
+    }
+
 }
