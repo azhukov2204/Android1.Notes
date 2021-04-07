@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">Notes</string>
+    <string name="createNewNoteButtonText">Create a new note</string>
+    <string name="saveAndCloseButtonText">Save and Close</string>
 </resources>
