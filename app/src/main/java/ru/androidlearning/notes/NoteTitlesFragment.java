@@ -24,7 +24,8 @@ import ru.androidlearning.notes.models.GetNotes;
 
 public class NoteTitlesFragment extends Fragment {
 
-    private int currentIndexOfNote = -1;
+    private int currentIndexOfNote;
+    private static final String BUNDLE_PARAM_KEY = "NoteIndex";
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -55,27 +56,62 @@ public class NoteTitlesFragment extends Fragment {
 
             noteTitleItemLayout.setOnClickListener(v -> {
                 currentIndexOfNote = finalNoteTitleIndex;
-                openNoteTextFragment(view);
+                openNoteTextFragment();
             });
             noteTitleIndex++;
         }
     }
 
-    private void openNoteTextFragment(View view) {
+    private void openNoteTextFragment() {
+        System.out.println("currentIndexOfNote: " + currentIndexOfNote);
+        if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
+            openNoteTextFragmentInLandscape();
+        } else {
+            openNoteTextFragmentInPortland();
+        }
+    }
+
+    private void openNoteTextFragmentInPortland() {
         NoteEditTextFragment noteEditTextFragment = NoteEditTextFragment.newInstance(currentIndexOfNote);
         FragmentManager fragmentManager = requireActivity().getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-
-        if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
-            Objects.requireNonNull(getActivity()).findViewById(R.id.nothingSelectedTextView).setVisibility(View.GONE);
-            fragmentTransaction.replace(R.id.noteTextFragmentContainer, noteEditTextFragment);
-        } else {
-            fragmentTransaction.replace(R.id.noteMainFragmentContainer, noteEditTextFragment).addToBackStack("fragment_note_titles");
-        }
-
-
+        fragmentTransaction.replace(R.id.noteMainFragmentContainer, noteEditTextFragment).addToBackStack("fragment_note_titles");
         fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
         fragmentTransaction.commit();
     }
 
+    private void openNoteTextFragmentInLandscape() {
+        NoteEditTextFragment noteEditTextFragment = NoteEditTextFragment.newInstance(currentIndexOfNote);
+        FragmentManager fragmentManager = requireActivity().getSupportFragmentManager();
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+        Objects.requireNonNull(getActivity()).findViewById(R.id.nothingSelectedTextView).setVisibility(View.GONE);
+        fragmentTransaction.replace(R.id.noteTextFragmentContainer, noteEditTextFragment);
+        fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
+        fragmentTransaction.commit();
+    }
+
+    @Override
+    public void onSaveInstanceState(@NonNull Bundle outState) {
+        outState.putInt(BUNDLE_PARAM_KEY, currentIndexOfNote);
+        System.out.println("Saved: " + currentIndexOfNote);
+        super.onSaveInstanceState(outState);
+    }
+
+
+
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        if (savedInstanceState != null) {
+            currentIndexOfNote = savedInstanceState.getInt(BUNDLE_PARAM_KEY);
+            System.out.println("read currentIndexOfNote: " + currentIndexOfNote);
+
+        } else {
+            currentIndexOfNote = 0;
+            System.out.println("currentIndexOfNote is null: " + currentIndexOfNote);
+        }
+        if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
+            openNoteTextFragmentInLandscape();
+        }
+    }
 }
