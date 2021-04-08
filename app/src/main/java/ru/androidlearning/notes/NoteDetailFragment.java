@@ -5,6 +5,8 @@ import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 
 import android.view.LayoutInflater;
 import android.view.View;
@@ -40,7 +42,6 @@ public class NoteDetailFragment extends Fragment {
         }
     }
 
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -61,6 +62,21 @@ public class NoteDetailFragment extends Fragment {
             if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
                 Objects.requireNonNull(getActivity()).onBackPressed();
             }
+        });
+
+
+        noteDate.setOnClickListener(v -> {
+            DatePickerFragment datePickerFragment = new DatePickerFragment(noteDate);
+            FragmentManager fragmentManager = requireActivity().getSupportFragmentManager();
+            FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+            fragmentTransaction.addToBackStack(null);
+            if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
+                fragmentTransaction.add(R.id.noteTextPortlandContainer, datePickerFragment);
+            } else {
+                fragmentTransaction.add(R.id.noteTextFragmentContainerMain, datePickerFragment);
+            }
+            fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
+            fragmentTransaction.commit();
         });
 
         return noteEditTextFragment;

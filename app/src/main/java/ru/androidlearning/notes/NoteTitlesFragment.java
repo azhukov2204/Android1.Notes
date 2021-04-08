@@ -93,7 +93,7 @@ public class NoteTitlesFragment extends Fragment {
             NoteDetailFragment noteDetailFragment = NoteDetailFragment.newInstance(currentIndexOfNote);
             FragmentManager fragmentManager = requireActivity().getSupportFragmentManager();
             FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-            Objects.requireNonNull(getActivity()).findViewById(R.id.nothingSelectedTextView).setVisibility(View.GONE);
+            //Objects.requireNonNull(getActivity()).findViewById(R.id.nothingSelectedTextView).setVisibility(View.GONE);
             fragmentTransaction.replace(R.id.noteTextFragmentContainerMain, noteDetailFragment);
             fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
             fragmentTransaction.commit();
