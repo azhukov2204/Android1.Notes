@@ -1,5 +1,6 @@
 package ru.androidlearning.notes;
 
+import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
 
@@ -17,14 +18,13 @@ import android.widget.TextView;
 
 import java.util.List;
 import java.util.Objects;
-import java.util.concurrent.locks.Condition;
 
 import ru.androidlearning.notes.models.GetNotes;
 
 
 public class NoteTitlesFragment extends Fragment {
 
-    private int currentIndexOfNote;
+    private int currentIndexOfNote = -1;
     private static final String BUNDLE_PARAM_KEY = "NoteIndex";
 
     @Override
@@ -72,22 +72,22 @@ public class NoteTitlesFragment extends Fragment {
     }
 
     private void openNoteTextFragmentInPortland() {
-        NoteEditTextFragment noteEditTextFragment = NoteEditTextFragment.newInstance(currentIndexOfNote);
-        FragmentManager fragmentManager = requireActivity().getSupportFragmentManager();
-        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-        fragmentTransaction.replace(R.id.noteMainFragmentContainer, noteEditTextFragment).addToBackStack("fragment_note_titles");
-        fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
-        fragmentTransaction.commit();
+        Intent noteTextActivityIntent = new Intent(getActivity(), NoteDetailActivity.class);
+        noteTextActivityIntent.putExtra(BUNDLE_PARAM_KEY, currentIndexOfNote);
+        startActivity(noteTextActivityIntent);
+
     }
 
     private void openNoteTextFragmentInLandscape() {
-        NoteEditTextFragment noteEditTextFragment = NoteEditTextFragment.newInstance(currentIndexOfNote);
-        FragmentManager fragmentManager = requireActivity().getSupportFragmentManager();
-        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-        Objects.requireNonNull(getActivity()).findViewById(R.id.nothingSelectedTextView).setVisibility(View.GONE);
-        fragmentTransaction.replace(R.id.noteTextFragmentContainer, noteEditTextFragment);
-        fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
-        fragmentTransaction.commit();
+        if (currentIndexOfNote >= 0) {
+            NoteDetailFragment noteDetailFragment = NoteDetailFragment.newInstance(currentIndexOfNote);
+            FragmentManager fragmentManager = requireActivity().getSupportFragmentManager();
+            FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+            Objects.requireNonNull(getActivity()).findViewById(R.id.nothingSelectedTextView).setVisibility(View.GONE);
+            fragmentTransaction.replace(R.id.noteTextFragmentContainerMain, noteDetailFragment);
+            fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
+            fragmentTransaction.commit();
+        }
     }
 
     @Override
@@ -98,7 +98,6 @@ public class NoteTitlesFragment extends Fragment {
     }
 
 
-
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
@@ -107,7 +106,7 @@ public class NoteTitlesFragment extends Fragment {
             System.out.println("read currentIndexOfNote: " + currentIndexOfNote);
 
         } else {
-            currentIndexOfNote = 0;
+            currentIndexOfNote = -1;
             System.out.println("currentIndexOfNote is null: " + currentIndexOfNote);
         }
         if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {

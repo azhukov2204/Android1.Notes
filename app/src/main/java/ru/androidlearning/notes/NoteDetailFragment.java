@@ -15,16 +15,16 @@ import java.util.Objects;
 
 import ru.androidlearning.notes.models.GetNotes;
 
-public class NoteEditTextFragment extends Fragment {
+public class NoteDetailFragment extends Fragment {
 
     private int currentIndexOfNote;
     private static final String BUNDLE_PARAM_KEY = "NoteIndex";
 
-    public NoteEditTextFragment() {
+    public NoteDetailFragment() {
     }
 
-    public static NoteEditTextFragment newInstance(int indexOfNote) {
-        NoteEditTextFragment fragment = new NoteEditTextFragment();
+    public static NoteDetailFragment newInstance(int indexOfNote) {
+        NoteDetailFragment fragment = new NoteDetailFragment();
         Bundle args = new Bundle();
         args.putInt(BUNDLE_PARAM_KEY, indexOfNote);
         fragment.setArguments(args);

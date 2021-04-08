@@ -6,9 +6,10 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
-    <FrameLayout
-        android:id="@+id/noteMainFragmentContainer"
+    <fragment
+        android:id="@+id/noteTitlesFragment"
+        android:name="ru.androidlearning.notes.NoteTitlesFragment"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
+        android:layout_height="match_parent" />
 
 </FrameLayout>
