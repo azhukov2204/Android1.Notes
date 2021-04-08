@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".NoteDetailFragment">
+
+
+    <TextView
+        android:id="@+id/noteDate"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="10dp"
+        android:gravity="end"
+        android:text=""
+        android:textSize="20sp" />
+
+    <EditText
+        android:id="@+id/noteTitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:autofillHints=""
+        android:gravity="center"
+        android:hint="@string/enterNoteTitleHint"
+        android:inputType="textShortMessage"
+        android:text=""
+        android:textSize="30sp"
+        android:textStyle="bold" />
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1">
+
+        <EditText
+            android:id="@+id/noteText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="5dp"
+            android:layout_marginTop="5dp"
+            android:layout_marginEnd="5dp"
+            android:layout_marginBottom="5dp"
+            android:autofillHints=""
+            android:hint="@string/enterNoteTextHint"
+            android:inputType="none"
+            android:text=""
+            android:textSize="25sp" />
+    </ScrollView>
+
+
+    <Button
+        android:id="@+id/saveAndCloseButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/saveAndCloseButtonText" />
+</LinearLayout>

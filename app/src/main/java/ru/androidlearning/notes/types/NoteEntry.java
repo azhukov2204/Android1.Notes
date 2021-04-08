@@ -4,18 +4,18 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 
-public class NoteEntryType {
+public class NoteEntry {
     private String noteTitle;
     private String noteText;
     private Date noteCreatedDate;
 
-    public NoteEntryType(String noteTitle, String noteText, Date noteCreatedDate) {
+    public NoteEntry(String noteTitle, String noteText, Date noteCreatedDate) {
         this.noteTitle = noteTitle;
         this.noteText = noteText;
         this.noteCreatedDate = noteCreatedDate;
     }
 
-    public NoteEntryType(String noteTitle, String noteText) {
+    public NoteEntry(String noteTitle, String noteText) {
         this.noteTitle = noteTitle;
         this.noteText = noteText;
         this.noteCreatedDate = new Date();

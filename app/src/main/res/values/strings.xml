@@ -3,4 +3,6 @@
     <string name="createNewNoteButtonText">Create a new note</string>
     <string name="saveAndCloseButtonText">Save and Close</string>
     <string name="nothingSelected">Nothing selected</string>
+    <string name="enterNoteTextHint">Enter note text</string>
+    <string name="enterNoteTitleHint">Enter note title</string>
 </resources>

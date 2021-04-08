@@ -2,12 +2,13 @@ package ru.androidlearning.notes.models;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 
-import ru.androidlearning.notes.types.NoteEntryType;
+import ru.androidlearning.notes.types.NoteEntry;
 
 public class Notes {
-    private final List<NoteEntryType> notesList;
+    private final List<NoteEntry> notesList;
 
     public Notes() {
         notesList = new ArrayList<>();
@@ -18,24 +19,29 @@ public class Notes {
             notesList = new ArrayList<>();
         } else {
             notesList = Arrays.asList(
-                    new NoteEntryType("title1", "massage1"),
-                    new NoteEntryType("title2", "message2"),
-                    new NoteEntryType("title3", "message3"),
-                    new NoteEntryType("title4", "message4"),
-                    new NoteEntryType("title5", "message5"),
-                    new NoteEntryType("title6", "message6"),
-                    new NoteEntryType("title7", "message7")
+                    new NoteEntry("title1", "massage1"),
+                    new NoteEntry("title2", "message2"),
+                    new NoteEntry("title3", "message3"),
+                    new NoteEntry("title4", "message4"),
+                    new NoteEntry("title5", "message5"),
+                    new NoteEntry("title6", "message6"),
+                    new NoteEntry("title7", "message7")
             );
         }
 
     }
 
     public void addNote(String title, String noteText) {
-        notesList.add(new NoteEntryType(title, noteText));
+        notesList.add(new NoteEntry(title, noteText));
     }
 
     public void deleteNoteByIndex(int index) {
         notesList.remove(index);
+    }
+
+    public void updateNoteByIndex(int index, String noteTitle, String noteText) {
+        notesList.get(index).setNoteTitle(noteTitle);
+        notesList.get(index).setNoteText(noteText);
     }
 
     public String getNoteTitleByIndex(int index) {
@@ -52,7 +58,7 @@ public class Notes {
 
     public List<String> getAllNotesTitles() {
         List<String> allNoteTitles = new ArrayList<>();
-        for (NoteEntryType note : notesList) {
+        for (NoteEntry note : notesList) {
             allNoteTitles.add(note.getNoteTitle());
         }
         return allNoteTitles;
