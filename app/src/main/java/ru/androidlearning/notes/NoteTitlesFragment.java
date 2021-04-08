@@ -13,6 +13,7 @@ import androidx.fragment.app.FragmentTransaction;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -30,8 +31,11 @@ public class NoteTitlesFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_note_titles, container, false);
+        View noteTitlesFragment = inflater.inflate(R.layout.fragment_note_titles, container, false);
+
+        noteTitlesFragment.findViewById(R.id.createNewNoteButton).setOnClickListener(v -> initNewNoteButton());
+
+        return noteTitlesFragment;
     }
 
     @Override
@@ -56,16 +60,22 @@ public class NoteTitlesFragment extends Fragment {
 
             noteTitleItemLayout.setOnClickListener(v -> {
                 currentIndexOfNote = finalNoteTitleIndex;
-                openNoteTextFragment();
+                openNoteTextFragment(false);
             });
             noteTitleIndex++;
         }
     }
 
-    private void openNoteTextFragment() {
+    private void initNewNoteButton() {
+        currentIndexOfNote = -1; //-1 - c таким индекмом будет выхвана логика создания новой заметки
+        openNoteTextFragment(true);
+    }
+
+
+    private void openNoteTextFragment(boolean isNewNote) {
         System.out.println("currentIndexOfNote: " + currentIndexOfNote);
         if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
-            openNoteTextFragmentInLandscape();
+            openNoteTextFragmentInLandscape(isNewNote);
         } else {
             openNoteTextFragmentInPortland();
         }
@@ -78,8 +88,8 @@ public class NoteTitlesFragment extends Fragment {
 
     }
 
-    private void openNoteTextFragmentInLandscape() {
-        if (currentIndexOfNote >= 0) {
+    private void openNoteTextFragmentInLandscape(boolean isNewNote) {
+        if (currentIndexOfNote >= 0 || isNewNote) {
             NoteDetailFragment noteDetailFragment = NoteDetailFragment.newInstance(currentIndexOfNote);
             FragmentManager fragmentManager = requireActivity().getSupportFragmentManager();
             FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
@@ -110,7 +120,7 @@ public class NoteTitlesFragment extends Fragment {
             System.out.println("currentIndexOfNote is null: " + currentIndexOfNote);
         }
         if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
-            openNoteTextFragmentInLandscape();
+            openNoteTextFragmentInLandscape(false);
         }
     }
 }

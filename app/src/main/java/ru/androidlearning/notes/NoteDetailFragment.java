@@ -12,7 +12,6 @@ import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.TextView;
 
-import java.util.Date;
 import java.util.Objects;
 
 import ru.androidlearning.notes.models.GetNotes;
@@ -51,30 +50,43 @@ public class NoteDetailFragment extends Fragment {
         TextView noteTitle = noteEditTextFragment.findViewById(R.id.noteTitle);
         TextView noteText = noteEditTextFragment.findViewById(R.id.noteText);
 
-        noteDate.setText(GetNotes.getNotes().getNoteFormattedCreatedDateAsStringByIndex(currentIndexOfNote));
-        noteTitle.setText(GetNotes.getNotes().getNoteTitleByIndex(currentIndexOfNote));
-        noteText.setText(GetNotes.getNotes().getNoteTextByIndex(currentIndexOfNote));
+        if (currentIndexOfNote >= 0) {
+            noteDate.setText(GetNotes.getNotes().getNoteFormattedCreatedDateAsStringByIndex(currentIndexOfNote));
+            noteTitle.setText(GetNotes.getNotes().getNoteTitleByIndex(currentIndexOfNote));
+            noteText.setText(GetNotes.getNotes().getNoteTextByIndex(currentIndexOfNote));
+        }
 
-        noteEditTextFragment.findViewById(R.id.saveAndCloseButton).setOnClickListener(v -> saveButtonEntered());
+        noteEditTextFragment.findViewById(R.id.saveAndCloseButton).setOnClickListener(v -> {
+            saveNoteChanges();
+            if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
+                Objects.requireNonNull(getActivity()).onBackPressed();
+            }
+        });
 
         return noteEditTextFragment;
     }
 
-    private void saveButtonEntered() {
+    private void saveNoteChanges() {
         EditText noteTitle = Objects.requireNonNull(getActivity()).findViewById(R.id.noteTitle);
         EditText noteText = Objects.requireNonNull(getActivity()).findViewById(R.id.noteText);
         if (noteTitle != null && noteText != null) {
-            GetNotes.getNotes().updateNoteByIndex(currentIndexOfNote, noteTitle.getText().toString(), noteText.getText().toString());
+            if (currentIndexOfNote >= 0) {
+                GetNotes.getNotes().updateNoteByIndex(currentIndexOfNote, noteTitle.getText().toString(), noteText.getText().toString());
+            } else {
+                //Создание новой заметки:
+                GetNotes.getNotes().addNote(noteTitle.getText().toString(), noteText.getText().toString());
+                currentIndexOfNote = GetNotes.getNotes().getAllNotesTitles().size() - 1;
+            }
         }
 
-        if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
+        /*if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
             Objects.requireNonNull(getActivity()).onBackPressed();
-        }
+        }*/
     }
 
     @Override
     public void onSaveInstanceState(@NonNull Bundle outState) {
-        saveButtonEntered();
+        saveNoteChanges();
         outState.putInt(BUNDLE_PARAM_KEY, currentIndexOfNote);
         System.out.println("Saved: " + currentIndexOfNote);
         super.onSaveInstanceState(outState);

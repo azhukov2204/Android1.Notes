@@ -15,20 +15,19 @@ public class Notes {
     }
 
     public Notes(boolean isTest) {
-        if (!isTest) {
-            notesList = new ArrayList<>();
-        } else {
-            notesList = Arrays.asList(
+        notesList = new ArrayList<>();
+        if (isTest) {
+            notesList.addAll(Arrays.asList(
                     new NoteEntry("title1", "massage1"),
                     new NoteEntry("title2", "message2"),
                     new NoteEntry("title3", "message3"),
                     new NoteEntry("title4", "message4"),
                     new NoteEntry("title5", "message5"),
                     new NoteEntry("title6", "message6"),
-                    new NoteEntry("title7", "message7")
-            );
-        }
+                    new NoteEntry("title7", "message7")));
 
+            notesList.add(new NoteEntry("title8", "message8"));
+        }
     }
 
     public void addNote(String title, String noteText) {
