@@ -30,17 +30,18 @@ public class Notes {
         }
     }
 
-    public void addNote(String title, String noteText) {
-        notesList.add(new NoteEntry(title, noteText));
+    public void addNote(String title, String noteText, String noteDate) {
+        notesList.add(new NoteEntry(title, noteText, noteDate));
     }
 
     public void deleteNoteByIndex(int index) {
         notesList.remove(index);
     }
 
-    public void updateNoteByIndex(int index, String noteTitle, String noteText) {
+    public void updateNoteByIndex(int index, String noteTitle, String noteText, String noteDate) {
         notesList.get(index).setNoteTitle(noteTitle);
         notesList.get(index).setNoteText(noteText);
+        notesList.get(index).setNoteCreatedDate(noteDate);
     }
 
     public String getNoteTitleByIndex(int index) {
@@ -52,7 +53,7 @@ public class Notes {
     }
 
     public String getNoteFormattedCreatedDateAsStringByIndex(int index) {
-        return notesList.get(index).getFormattedCreatedDateAsString();
+        return notesList.get(index).getNoteCreatedDate();
     }
 
     public List<String> getAllNotesTitles() {

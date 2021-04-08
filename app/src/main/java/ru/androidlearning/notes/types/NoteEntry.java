@@ -1,15 +1,16 @@
 package ru.androidlearning.notes.types;
 
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
 
 public class NoteEntry {
     private String noteTitle;
     private String noteText;
-    private Date noteCreatedDate;
+    private String noteCreatedDate;
 
-    public NoteEntry(String noteTitle, String noteText, Date noteCreatedDate) {
+    public NoteEntry(String noteTitle, String noteText, String noteCreatedDate) {
         this.noteTitle = noteTitle;
         this.noteText = noteText;
         this.noteCreatedDate = noteCreatedDate;
@@ -18,7 +19,8 @@ public class NoteEntry {
     public NoteEntry(String noteTitle, String noteText) {
         this.noteTitle = noteTitle;
         this.noteText = noteText;
-        this.noteCreatedDate = new Date();
+        Calendar calendar = Calendar.getInstance();
+        this.noteCreatedDate = String.format(Locale.US, "%02d.%02d.%04d", calendar.get(Calendar.DAY_OF_MONTH), calendar.get(Calendar.MONTH) + 1, calendar.get(Calendar.YEAR));
     }
 
     public String getNoteTitle() {
@@ -29,14 +31,10 @@ public class NoteEntry {
         return noteText;
     }
 
-    public Date getNoteCreatedDate() {
+    public String getNoteCreatedDate() {
         return noteCreatedDate;
     }
 
-    public String getFormattedCreatedDateAsString() {
-        SimpleDateFormat timeFormat = new SimpleDateFormat("dd.MM.yyyy HH:mm:ss", Locale.US);
-        return timeFormat.format(noteCreatedDate);
-    }
 
     public void setNoteTitle(String noteTitle) {
         this.noteTitle = noteTitle;
@@ -46,7 +44,7 @@ public class NoteEntry {
         this.noteText = noteText;
     }
 
-    public void setNoteCreatedDate(Date noteCreatedDate) {
+    public void setNoteCreatedDate(String noteCreatedDate) {
         this.noteCreatedDate = noteCreatedDate;
     }
 }

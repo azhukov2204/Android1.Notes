@@ -14,6 +14,8 @@ import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import java.util.Calendar;
+import java.util.Locale;
 import java.util.Objects;
 
 import ru.androidlearning.notes.models.GetNotes;
@@ -55,6 +57,9 @@ public class NoteDetailFragment extends Fragment {
             noteDate.setText(GetNotes.getNotes().getNoteFormattedCreatedDateAsStringByIndex(currentIndexOfNote));
             noteTitle.setText(GetNotes.getNotes().getNoteTitleByIndex(currentIndexOfNote));
             noteText.setText(GetNotes.getNotes().getNoteTextByIndex(currentIndexOfNote));
+        } else {
+            Calendar calendar = Calendar.getInstance();
+            noteDate.setText(String.format(Locale.US, "%02d.%02d.%04d", calendar.get(Calendar.DAY_OF_MONTH), calendar.get(Calendar.MONTH) + 1, calendar.get(Calendar.YEAR)));
         }
 
         noteEditTextFragment.findViewById(R.id.saveAndCloseButton).setOnClickListener(v -> {
@@ -63,7 +68,6 @@ public class NoteDetailFragment extends Fragment {
                 Objects.requireNonNull(getActivity()).onBackPressed();
             }
         });
-
 
         noteDate.setOnClickListener(v -> {
             DatePickerFragment datePickerFragment = new DatePickerFragment(noteDate);
@@ -85,19 +89,18 @@ public class NoteDetailFragment extends Fragment {
     private void saveNoteChanges() {
         EditText noteTitle = Objects.requireNonNull(getActivity()).findViewById(R.id.noteTitle);
         EditText noteText = Objects.requireNonNull(getActivity()).findViewById(R.id.noteText);
-        if (noteTitle != null && noteText != null) {
+        TextView noteDate = Objects.requireNonNull(getActivity()).findViewById(R.id.noteDate);
+
+        if (noteTitle != null && noteText != null && noteDate != null) {
             if (currentIndexOfNote >= 0) {
-                GetNotes.getNotes().updateNoteByIndex(currentIndexOfNote, noteTitle.getText().toString(), noteText.getText().toString());
+                GetNotes.getNotes().updateNoteByIndex(currentIndexOfNote, noteTitle.getText().toString(), noteText.getText().toString(), noteDate.getText().toString());
             } else {
                 //Создание новой заметки:
-                GetNotes.getNotes().addNote(noteTitle.getText().toString(), noteText.getText().toString());
+                GetNotes.getNotes().addNote(noteTitle.getText().toString(), noteText.getText().toString(), noteDate.getText().toString());
                 currentIndexOfNote = GetNotes.getNotes().getAllNotesTitles().size() - 1;
             }
         }
 
-        /*if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
-            Objects.requireNonNull(getActivity()).onBackPressed();
-        }*/
     }
 
     @Override
