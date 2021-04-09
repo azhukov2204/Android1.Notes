@@ -13,14 +13,16 @@ import androidx.fragment.app.FragmentTransaction;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+
+import com.squareup.otto.Subscribe;
 
 import java.util.List;
 import java.util.Objects;
 
-import ru.androidlearning.notes.models.GetNotes;
+import ru.androidlearning.notes.models.SingleObjectsGetter;
+import ru.androidlearning.notes.types.EventTypeRecreateNoteTitles;
 
 
 public class NoteTitlesFragment extends Fragment {
@@ -46,7 +48,7 @@ public class NoteTitlesFragment extends Fragment {
 
     private void initNoteTitlesList(View view) {
         LinearLayout noteTitlesLinearLayout = view.findViewById(R.id.noteTitlesLayout);
-        List<String> noteTitles = GetNotes.getNotes(true).getAllNotesTitles();
+        List<String> noteTitles = SingleObjectsGetter.getNotes(true).getAllNotesTitles();
 
         int noteTitleIndex = 0;
         for (String noteTitle : noteTitles) {
@@ -67,7 +69,7 @@ public class NoteTitlesFragment extends Fragment {
     }
 
     private void initNewNoteButton() {
-        currentIndexOfNote = -1; //-1 - c таким индекмом будет выхвана логика создания новой заметки
+        currentIndexOfNote = -1; //-1 - c таким индекмом будет вызвана логика создания новой заметки
         openNoteTextFragment(true);
     }
 
@@ -123,4 +125,19 @@ public class NoteTitlesFragment extends Fragment {
             openNoteTextFragmentInLandscape(false);
         }
     }
+
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        SingleObjectsGetter.getBus().register(this);
+    }
+
+
+    @Subscribe
+    public void RecreateNoteTitlesList(EventTypeRecreateNoteTitles e) {
+        System.out.println("RecreateNoteTitlesList");
+        //todo сделать обновление списка заголовков
+    }
+
 }

@@ -25,8 +25,6 @@ public class Notes {
                     new NoteEntry("title5", "message5"),
                     new NoteEntry("title6", "message6"),
                     new NoteEntry("title7", "message7")));
-
-            notesList.add(new NoteEntry("title8", "message8"));
         }
     }
 

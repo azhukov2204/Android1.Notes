@@ -16,9 +16,6 @@ import java.util.Objects;
 
 public class DatePickerFragment extends Fragment {
 
-
-    private static final String ARG_PARAM = "noteDateTextView";
-
     private TextView noteDateTextView;
 
     public DatePickerFragment() {

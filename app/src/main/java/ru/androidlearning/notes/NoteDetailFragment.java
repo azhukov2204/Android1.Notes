@@ -18,7 +18,8 @@ import java.util.Calendar;
 import java.util.Locale;
 import java.util.Objects;
 
-import ru.androidlearning.notes.models.GetNotes;
+import ru.androidlearning.notes.models.SingleObjectsGetter;
+import ru.androidlearning.notes.types.EventTypeRecreateNoteTitles;
 
 public class NoteDetailFragment extends Fragment {
 
@@ -42,6 +43,7 @@ public class NoteDetailFragment extends Fragment {
         if (getArguments() != null) {
             currentIndexOfNote = getArguments().getInt(BUNDLE_PARAM_KEY);
         }
+        SingleObjectsGetter.getBus().register(this);
     }
 
     @Override
@@ -54,36 +56,40 @@ public class NoteDetailFragment extends Fragment {
         TextView noteText = noteEditTextFragment.findViewById(R.id.noteText);
 
         if (currentIndexOfNote >= 0) {
-            noteDate.setText(GetNotes.getNotes().getNoteFormattedCreatedDateAsStringByIndex(currentIndexOfNote));
-            noteTitle.setText(GetNotes.getNotes().getNoteTitleByIndex(currentIndexOfNote));
-            noteText.setText(GetNotes.getNotes().getNoteTextByIndex(currentIndexOfNote));
+            noteDate.setText(SingleObjectsGetter.getNotes().getNoteFormattedCreatedDateAsStringByIndex(currentIndexOfNote));
+            noteTitle.setText(SingleObjectsGetter.getNotes().getNoteTitleByIndex(currentIndexOfNote));
+            noteText.setText(SingleObjectsGetter.getNotes().getNoteTextByIndex(currentIndexOfNote));
         } else {
             Calendar calendar = Calendar.getInstance();
             noteDate.setText(String.format(Locale.US, "%02d.%02d.%04d", calendar.get(Calendar.DAY_OF_MONTH), calendar.get(Calendar.MONTH) + 1, calendar.get(Calendar.YEAR)));
         }
 
-        noteEditTextFragment.findViewById(R.id.saveAndCloseButton).setOnClickListener(v -> {
-            saveNoteChanges();
-            if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
-                Objects.requireNonNull(getActivity()).onBackPressed();
-            }
-        });
-
-        noteDate.setOnClickListener(v -> {
-            DatePickerFragment datePickerFragment = new DatePickerFragment(noteDate);
-            FragmentManager fragmentManager = requireActivity().getSupportFragmentManager();
-            FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-            fragmentTransaction.addToBackStack(null);
-            if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
-                fragmentTransaction.add(R.id.noteTextPortlandContainer, datePickerFragment);
-            } else {
-                fragmentTransaction.add(R.id.noteTextFragmentContainerMain, datePickerFragment);
-            }
-            fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
-            fragmentTransaction.commit();
-        });
+        noteEditTextFragment.findViewById(R.id.saveAndCloseButton).setOnClickListener(v -> saveAndCloseButtonAction());
+        noteDate.setOnClickListener(v -> setDateFromDatePicker(noteDate));
 
         return noteEditTextFragment;
+    }
+
+    private void saveAndCloseButtonAction() {
+        saveNoteChanges();
+        if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
+            Objects.requireNonNull(getActivity()).onBackPressed();
+        }
+    }
+
+    private void setDateFromDatePicker(TextView noteDate) {
+        DatePickerFragment datePickerFragment = new DatePickerFragment(noteDate);
+        FragmentManager fragmentManager = requireActivity().getSupportFragmentManager();
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+        fragmentTransaction.addToBackStack(null);
+        if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
+            fragmentTransaction.add(R.id.noteTextPortlandContainer, datePickerFragment);
+        } else {
+            fragmentTransaction.add(R.id.noteTextFragmentContainerMain, datePickerFragment);
+        }
+        fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
+        fragmentTransaction.commit();
+
     }
 
     private void saveNoteChanges() {
@@ -93,23 +99,22 @@ public class NoteDetailFragment extends Fragment {
 
         if (noteTitle != null && noteText != null && noteDate != null) {
             if (currentIndexOfNote >= 0) {
-                GetNotes.getNotes().updateNoteByIndex(currentIndexOfNote, noteTitle.getText().toString(), noteText.getText().toString(), noteDate.getText().toString());
+                //Редактирование существующей заметки
+                SingleObjectsGetter.getNotes().updateNoteByIndex(currentIndexOfNote, noteTitle.getText().toString(), noteText.getText().toString(), noteDate.getText().toString());
             } else {
                 //Создание новой заметки:
-                GetNotes.getNotes().addNote(noteTitle.getText().toString(), noteText.getText().toString(), noteDate.getText().toString());
-                currentIndexOfNote = GetNotes.getNotes().getAllNotesTitles().size() - 1;
+                SingleObjectsGetter.getNotes().addNote(noteTitle.getText().toString(), noteText.getText().toString(), noteDate.getText().toString());
+                currentIndexOfNote = SingleObjectsGetter.getNotes().getAllNotesTitles().size() - 1;
             }
         }
-
+        System.out.println("currentIndexOfNote in NoteDetailFragment: " + currentIndexOfNote);
+        SingleObjectsGetter.getBus().post(new EventTypeRecreateNoteTitles(currentIndexOfNote));
     }
+
 
     @Override
-    public void onSaveInstanceState(@NonNull Bundle outState) {
+    public void onPause() {
         saveNoteChanges();
-        outState.putInt(BUNDLE_PARAM_KEY, currentIndexOfNote);
-        System.out.println("Saved: " + currentIndexOfNote);
-        super.onSaveInstanceState(outState);
+        super.onPause();
     }
-
-
 }

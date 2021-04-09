@@ -1,7 +1,9 @@
 package ru.androidlearning.notes.models;
+import com.squareup.otto.Bus;
 
-public class GetNotes {
+public class SingleObjectsGetter {
     private static Notes notes = null;
+    private static Bus bus = null;
 
     public static Notes getNotes() {
         if (notes == null) {
@@ -17,4 +19,10 @@ public class GetNotes {
         return notes;
     }
 
+    public static Bus getBus() {
+        if(bus == null) {
+            bus = new Bus();
+        }
+        return bus;
+    }
 }
