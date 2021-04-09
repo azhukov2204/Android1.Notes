@@ -3,7 +3,6 @@ package ru.androidlearning.notes;
 import android.content.res.Configuration;
 import android.os.Bundle;
 
-import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
@@ -19,7 +18,7 @@ import java.util.Locale;
 import java.util.Objects;
 
 import ru.androidlearning.notes.models.SingleObjectsGetter;
-import ru.androidlearning.notes.types.EventTypeRecreateNoteTitles;
+import ru.androidlearning.notes.types.EventUpdateNoteTitles;
 
 public class NoteDetailFragment extends Fragment {
 
@@ -108,7 +107,7 @@ public class NoteDetailFragment extends Fragment {
             }
         }
         System.out.println("currentIndexOfNote in NoteDetailFragment: " + currentIndexOfNote);
-        SingleObjectsGetter.getBus().post(new EventTypeRecreateNoteTitles(currentIndexOfNote));
+        SingleObjectsGetter.getBus().post(new EventUpdateNoteTitles(currentIndexOfNote));
     }
 
 

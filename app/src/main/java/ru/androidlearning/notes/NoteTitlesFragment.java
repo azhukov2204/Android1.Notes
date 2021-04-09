@@ -22,7 +22,7 @@ import java.util.List;
 import java.util.Objects;
 
 import ru.androidlearning.notes.models.SingleObjectsGetter;
-import ru.androidlearning.notes.types.EventTypeRecreateNoteTitles;
+import ru.androidlearning.notes.types.EventUpdateNoteTitles;
 
 
 public class NoteTitlesFragment extends Fragment {
@@ -135,7 +135,7 @@ public class NoteTitlesFragment extends Fragment {
 
 
     @Subscribe
-    public void RecreateNoteTitlesList(EventTypeRecreateNoteTitles e) {
+    public void RecreateNoteTitlesList(EventUpdateNoteTitles e) {
         System.out.println("RecreateNoteTitlesList");
         //todo сделать обновление списка заголовков
     }
