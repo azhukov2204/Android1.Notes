@@ -58,12 +58,12 @@ public class NoteDetailFragment extends Fragment {
         TextView noteText = noteEditTextFragment.findViewById(R.id.noteText);
 
         if (currentIndexOfNote >= 0) {
-            //существующая заметка:
+            //заполняем поля существующей заметки:
             noteDate.setText(SingleObjectsGetter.getNotes().getNoteFormattedCreatedDateAsStringByIndex(currentIndexOfNote));
             noteTitle.setText(SingleObjectsGetter.getNotes().getNoteTitleByIndex(currentIndexOfNote));
             noteText.setText(SingleObjectsGetter.getNotes().getNoteTextByIndex(currentIndexOfNote));
         } else {
-            //новая заметка:
+            //создаем новую заметку:
             Calendar calendar = Calendar.getInstance();
             noteDate.setText(String.format(Locale.US, "%02d.%02d.%04d", calendar.get(Calendar.DAY_OF_MONTH), calendar.get(Calendar.MONTH) + 1, calendar.get(Calendar.YEAR)));
         }
@@ -72,6 +72,12 @@ public class NoteDetailFragment extends Fragment {
         noteDate.setOnClickListener(v -> setDateFromDatePicker(noteDate));
 
         return noteEditTextFragment;
+    }
+
+    @Override
+    public void onPause() {
+        saveNoteChanges();
+        super.onPause();
     }
 
     private void saveAndCloseButtonAction() {
@@ -97,10 +103,16 @@ public class NoteDetailFragment extends Fragment {
         EditText noteText = Objects.requireNonNull(getActivity()).findViewById(R.id.noteText);
         TextView noteDate = Objects.requireNonNull(getActivity()).findViewById(R.id.noteDate);
 
-        if (noteTitle != null && noteText != null && noteDate != null && !noteTitle.getText().toString().trim().isEmpty()) {
+        if (noteTitle != null && noteText != null && noteDate != null) {
             if (currentIndexOfNote >= 0) {
                 //Редактирование существующей заметки
+                String oldTitle = SingleObjectsGetter.getNotes().getNoteTitleByIndex(currentIndexOfNote);
                 SingleObjectsGetter.getNotes().updateNoteByIndex(currentIndexOfNote, noteTitle.getText().toString(), noteText.getText().toString(), noteDate.getText().toString());
+
+                if (!oldTitle.equals(noteTitle.getText().toString())) { //если заголовок изменился - тоже делаем обновление списка
+                    SingleObjectsGetter.getBus().post(new EventUpdateNoteTitles(currentIndexOfNote));
+                    Log.d("currentIndexOfNote", "currentIndexOfNote in NoteDetailFragment: " + currentIndexOfNote);
+                }
             } else {
                 //Создание новой заметки:
                 SingleObjectsGetter.getNotes().addNote(noteTitle.getText().toString(), noteText.getText().toString(), noteDate.getText().toString());
@@ -111,9 +123,4 @@ public class NoteDetailFragment extends Fragment {
         }
     }
 
-    @Override
-    public void onPause() {
-        saveNoteChanges();
-        super.onPause();
-    }
 }
