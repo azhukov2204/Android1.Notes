@@ -1,5 +1,6 @@
 package ru.androidlearning.notes;
 
+import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
@@ -27,8 +28,11 @@ import ru.androidlearning.notes.types.EventUpdateNoteTitles;
 
 public class NoteTitlesFragment extends Fragment {
 
-    private int currentIndexOfNote = -1;
+    private int currentIndexOfNote = 0;
+    private int newIndexOfNote = 0;
     private static final String BUNDLE_PARAM_KEY = "NoteIndex";
+    private boolean needRecreateNoteTitlesList = false;
+    private LinearLayout noteTitlesLinearLayout = null;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -43,17 +47,17 @@ public class NoteTitlesFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        initNoteTitlesList(view);
+        noteTitlesLinearLayout = view.findViewById(R.id.noteTitlesLayout);
+        initNoteTitlesList();
     }
 
-    private void initNoteTitlesList(View view) {
-        LinearLayout noteTitlesLinearLayout = view.findViewById(R.id.noteTitlesLayout);
+    private void initNoteTitlesList() {
         List<String> noteTitles = SingleObjectsGetter.getNotes(true).getAllNotesTitles();
-
+        LayoutInflater inflater = getLayoutInflater();
+        noteTitlesLinearLayout.removeAllViews();
         int noteTitleIndex = 0;
         for (String noteTitle : noteTitles) {
             //TextView для отображения заголовков заметок будем брать из "шаблона"
-            LayoutInflater inflater = getLayoutInflater();
             View noteTitleItemLayout = inflater.inflate(R.layout.note_title_item, noteTitlesLinearLayout, false);
             TextView noteTitleView = noteTitleItemLayout.findViewById(R.id.noteTitleTextView);
             noteTitleView.setText(noteTitle);
@@ -68,44 +72,49 @@ public class NoteTitlesFragment extends Fragment {
         }
     }
 
+
     private void initNewNoteButton() {
-        currentIndexOfNote = -1; //-1 - c таким индекмом будет вызвана логика создания новой заметки
         openNoteTextFragment(true);
     }
 
 
     private void openNoteTextFragment(boolean isNewNote) {
-        System.out.println("currentIndexOfNote: " + currentIndexOfNote);
         if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
             openNoteTextFragmentInLandscape(isNewNote);
         } else {
-            openNoteTextFragmentInPortland();
+            openNoteTextFragmentInPortland(isNewNote);
         }
     }
 
-    private void openNoteTextFragmentInPortland() {
+    private void openNoteTextFragmentInPortland(boolean isNewNote) {
         Intent noteTextActivityIntent = new Intent(getActivity(), NoteDetailActivity.class);
-        noteTextActivityIntent.putExtra(BUNDLE_PARAM_KEY, currentIndexOfNote);
+        if (isNewNote) {
+            noteTextActivityIntent.putExtra(BUNDLE_PARAM_KEY, -1);
+        } else {
+            noteTextActivityIntent.putExtra(BUNDLE_PARAM_KEY, currentIndexOfNote);
+        }
         startActivity(noteTextActivityIntent);
 
     }
 
     private void openNoteTextFragmentInLandscape(boolean isNewNote) {
-        if (currentIndexOfNote >= 0 || isNewNote) {
-            NoteDetailFragment noteDetailFragment = NoteDetailFragment.newInstance(currentIndexOfNote);
-            FragmentManager fragmentManager = requireActivity().getSupportFragmentManager();
-            FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-            Objects.requireNonNull(getActivity()).findViewById(R.id.nothingSelectedTextView).setVisibility(View.GONE);
-            fragmentTransaction.replace(R.id.noteTextFragmentContainerMain, noteDetailFragment);
-            fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
-            fragmentTransaction.commit();
+        NoteDetailFragment noteDetailFragment;
+        if (isNewNote) {
+            noteDetailFragment = NoteDetailFragment.newInstance(-1);
+        } else {
+            noteDetailFragment = NoteDetailFragment.newInstance(currentIndexOfNote);
         }
+        FragmentManager fragmentManager = requireActivity().getSupportFragmentManager();
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+        Objects.requireNonNull(getActivity()).findViewById(R.id.nothingSelectedTextView).setVisibility(View.GONE);
+        fragmentTransaction.replace(R.id.noteTextFragmentContainerMain, noteDetailFragment);
+        fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
+        fragmentTransaction.commit();
     }
 
     @Override
     public void onSaveInstanceState(@NonNull Bundle outState) {
         outState.putInt(BUNDLE_PARAM_KEY, currentIndexOfNote);
-        System.out.println("Saved: " + currentIndexOfNote);
         super.onSaveInstanceState(outState);
     }
 
@@ -115,11 +124,8 @@ public class NoteTitlesFragment extends Fragment {
         super.onActivityCreated(savedInstanceState);
         if (savedInstanceState != null) {
             currentIndexOfNote = savedInstanceState.getInt(BUNDLE_PARAM_KEY);
-            System.out.println("read currentIndexOfNote: " + currentIndexOfNote);
-
         } else {
-            currentIndexOfNote = -1;
-            System.out.println("currentIndexOfNote is null: " + currentIndexOfNote);
+            currentIndexOfNote = 0;
         }
         if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
             openNoteTextFragmentInLandscape(false);
@@ -136,8 +142,37 @@ public class NoteTitlesFragment extends Fragment {
 
     @Subscribe
     public void RecreateNoteTitlesList(EventUpdateNoteTitles e) {
-        System.out.println("RecreateNoteTitlesList");
-        //todo сделать обновление списка заголовков
+        needRecreateNoteTitlesList = true;
+        newIndexOfNote = e.getNewIndexOfNote();
+
+        if (getActivity() != null) {
+            if (requireActivity().getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE)
+            {
+                needRecreateNoteTitlesList = false;
+                currentIndexOfNote = newIndexOfNote;
+                initNoteTitlesList();
+            }
+        }
+    }
+
+    @Override
+    public void onAttach(@NonNull Context context) {
+        super.onAttach(context);
+        if (needRecreateNoteTitlesList) {
+            needRecreateNoteTitlesList = false;
+            currentIndexOfNote = newIndexOfNote;
+            initNoteTitlesList();
+        }
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (needRecreateNoteTitlesList) {
+            needRecreateNoteTitlesList = false;
+            currentIndexOfNote = newIndexOfNote;
+            initNoteTitlesList();
+        }
     }
 
 }

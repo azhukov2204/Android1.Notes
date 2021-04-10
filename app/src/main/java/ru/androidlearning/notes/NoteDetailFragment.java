@@ -8,6 +8,7 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -96,7 +97,7 @@ public class NoteDetailFragment extends Fragment {
         EditText noteText = Objects.requireNonNull(getActivity()).findViewById(R.id.noteText);
         TextView noteDate = Objects.requireNonNull(getActivity()).findViewById(R.id.noteDate);
 
-        if (noteTitle != null && noteText != null && noteDate != null) {
+        if (noteTitle != null && noteText != null && noteDate != null && !noteTitle.getText().toString().trim().isEmpty()) {
             if (currentIndexOfNote >= 0) {
                 //Редактирование существующей заметки
                 SingleObjectsGetter.getNotes().updateNoteByIndex(currentIndexOfNote, noteTitle.getText().toString(), noteText.getText().toString(), noteDate.getText().toString());
@@ -104,10 +105,10 @@ public class NoteDetailFragment extends Fragment {
                 //Создание новой заметки:
                 SingleObjectsGetter.getNotes().addNote(noteTitle.getText().toString(), noteText.getText().toString(), noteDate.getText().toString());
                 currentIndexOfNote = SingleObjectsGetter.getNotes().getAllNotesTitles().size() - 1;
+                SingleObjectsGetter.getBus().post(new EventUpdateNoteTitles(currentIndexOfNote));
+                Log.d("currentIndexOfNote", "currentIndexOfNote in NoteDetailFragment: " + currentIndexOfNote);
             }
         }
-        System.out.println("currentIndexOfNote in NoteDetailFragment: " + currentIndexOfNote);
-        SingleObjectsGetter.getBus().post(new EventUpdateNoteTitles(currentIndexOfNote));
     }
 
     @Override
