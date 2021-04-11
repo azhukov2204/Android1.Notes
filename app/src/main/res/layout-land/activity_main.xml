@@ -9,13 +9,13 @@
     android:baselineAligned="false">
 
     <FrameLayout
-        android:id="@+id/noteTitlesFragmentContainer"
+        android:id="@+id/notesUniversalFragmentContainer"
         android:layout_width="0dp"
         android:layout_height="match_parent"
         android:layout_weight="1"/>
 
     <FrameLayout
-        android:id="@+id/noteDetailFragmentContainerMain"
+        android:id="@+id/noteDetailFragmentContainer"
         android:layout_width="0dp"
         android:layout_height="match_parent"
         android:layout_weight="2">

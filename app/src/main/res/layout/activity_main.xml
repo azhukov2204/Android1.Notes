@@ -7,7 +7,7 @@
     tools:context=".MainActivity">
 
     <FrameLayout
-        android:id="@+id/noteTitlesFragmentContainer"
+        android:id="@+id/notesUniversalFragmentContainer"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 
