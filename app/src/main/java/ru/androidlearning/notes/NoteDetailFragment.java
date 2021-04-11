@@ -73,11 +73,10 @@ public class NoteDetailFragment extends Fragment {
         switch (item.getItemId()) {
             case R.id.action_delete:
                 deleteCurrentNote();
-                break;
+                return true;
             case R.id.action_forward:
                 Toast.makeText(getContext(), "Forward will be implemented later...", Toast.LENGTH_SHORT).show();
-                break;
-            default: break;
+                return true;
         }
         return super.onOptionsItemSelected(item);
     }

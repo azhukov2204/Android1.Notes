@@ -1,5 +1,6 @@
 package ru.androidlearning.notes;
 
+import android.annotation.SuppressLint;
 import android.content.res.Configuration;
 import android.os.Bundle;
 
@@ -71,14 +72,24 @@ public class NoteTitlesFragment extends Fragment {
                 return true;
             }
         });
-
     }
 
+    @SuppressLint("NonConstantResourceId")
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-
-        if (item.getItemId() == R.id.action_add) {
-            openNoteDetailFragment(true);
+        switch (item.getItemId()) {
+            case R.id.action_add:
+                openNoteDetailFragment(true);
+                return true;
+            case R.id.action_sort_none:
+                Toast.makeText(getContext(), "Sort none will be implemented later...", Toast.LENGTH_SHORT).show();
+                return true;
+            case R.id.action_sort_ascending:
+                Toast.makeText(getContext(), "Sort ascending will be implemented later...", Toast.LENGTH_SHORT).show();
+                return true;
+            case R.id.action_sort_descending:
+                Toast.makeText(getContext(), "Sort descending will be implemented later...", Toast.LENGTH_SHORT).show();
+                return true;
         }
         return super.onOptionsItemSelected(item);
     }

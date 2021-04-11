@@ -28,12 +28,12 @@ public class MainActivity extends AppCompatActivity {
         }
         fragmentManager.popBackStack(NoteTitlesFragment.TITLES_LIST_BACKSTACK_NAME, FragmentManager.POP_BACK_STACK_INCLUSIVE);
 
-        removeUnnecessaryFragments(); //при смене ориентации на портретную надо удалить фрагмент из noteDetailFragmentContainer, иначе в ToolBar останется его меню
+        removeUnnecessaryNoteDetailFragment(); //при смене ориентации на портретную надо удалить фрагмент из noteDetailFragmentContainer, иначе в ToolBar останется его меню
 
         initToolbar();
     }
 
-    private void removeUnnecessaryFragments() {
+    private void removeUnnecessaryNoteDetailFragment() {
         if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
             FragmentManager fragmentManager = getSupportFragmentManager();
             Fragment noteDetailFragment = fragmentManager.findFragmentById(R.id.noteDetailFragmentContainer);
@@ -51,21 +51,16 @@ public class MainActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
     }
 
-
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Здесь определяем меню приложения (активити)
         getMenuInflater().inflate(R.menu.content_main_menu, menu);
-
         return true;
     }
-
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Обработка выбора пункта меню приложения (активити)
-        int id = item.getItemId();
-
         return super.onOptionsItemSelected(item);
     }
 

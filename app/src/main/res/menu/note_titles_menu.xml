@@ -14,4 +14,27 @@
         android:orderInCategory="20"
         android:title="@string/addMenuItem"
         app:showAsAction="ifRoom" />
+    <item
+        android:id="@+id/action_sorting"
+        android:orderInCategory="30"
+        android:title="@string/sortingMenuItem">
+        <menu>
+            <group android:checkableBehavior="single">
+                <item
+                    android:id="@+id/action_sort_none"
+                    android:checked="true"
+                    android:orderInCategory="1"
+                    android:title="@string/sortNoneMenuItem" />
+                <item
+                    android:id="@+id/action_sort_ascending"
+                    android:orderInCategory="2"
+                    android:title="@string/sortAscendingMenuItem" />
+                <item
+                    android:id="@+id/action_sort_descending"
+                    android:orderInCategory="3"
+                    android:title="@string/sortDescendingMenuItem" />
+            </group>
+        </menu>
+
+    </item>
 </menu>
