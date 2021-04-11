@@ -1,15 +1,15 @@
 package ru.androidlearning.notes;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.SearchView;
 import androidx.appcompat.widget.Toolbar;
+import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.Toast;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -27,7 +27,23 @@ public class MainActivity extends AppCompatActivity {
             fragmentTransaction.commit();
         }
         fragmentManager.popBackStack(NoteTitlesFragment.TITLES_LIST_BACKSTACK_NAME, FragmentManager.POP_BACK_STACK_INCLUSIVE);
+
+        removeUnnecessaryFragments(); //при смене ориентации на портретную надо удалить фрагмент из noteDetailFragmentContainer, иначе в ToolBar останется его меню
+
         initToolbar();
+    }
+
+    private void removeUnnecessaryFragments() {
+        if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
+            FragmentManager fragmentManager = getSupportFragmentManager();
+            Fragment noteDetailFragment = fragmentManager.findFragmentById(R.id.noteDetailFragmentContainer);
+
+            if (noteDetailFragment != null) {
+                System.out.println("Fragment: " + noteDetailFragment.toString());
+                System.out.println("isVisible: " + noteDetailFragment.isVisible());
+                fragmentManager.beginTransaction().remove(noteDetailFragment).commit();
+            }
+        }
     }
 
     private void initToolbar() {
@@ -50,11 +66,7 @@ public class MainActivity extends AppCompatActivity {
         // Обработка выбора пункта меню приложения (активити)
         int id = item.getItemId();
 
-
         return super.onOptionsItemSelected(item);
     }
-
-
-
 
 }
