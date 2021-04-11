@@ -4,17 +4,20 @@ import android.app.DatePickerDialog;
 import android.content.res.Configuration;
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentTransaction;
 
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.Calendar;
 import java.util.Locale;
@@ -48,8 +51,36 @@ public class NoteDetailFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
         View noteEditTextFragment = inflater.inflate(R.layout.fragment_note_detail, container, false);
+        initViews(noteEditTextFragment);
+
+        //if (savedInstanceState == null)
+        setHasOptionsMenu(true); //используем меню
+
+        return noteEditTextFragment;
+    }
+
+    @Override
+    public void onCreateOptionsMenu(@NonNull Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.note_details_menu, menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        if (item.getItemId() == R.id.action_delete) {
+            Toast.makeText(getContext(), "Chosen remove", Toast.LENGTH_SHORT).show();
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onPause() {
+        saveNoteChanges();
+        super.onPause();
+    }
+
+    private void initViews(View noteEditTextFragment) {
         TextView noteDate = noteEditTextFragment.findViewById(R.id.noteDate);
         TextView noteTitle = noteEditTextFragment.findViewById(R.id.noteTitle);
         TextView noteText = noteEditTextFragment.findViewById(R.id.noteText);
@@ -67,14 +98,6 @@ public class NoteDetailFragment extends Fragment {
 
         noteEditTextFragment.findViewById(R.id.saveAndCloseButton).setOnClickListener(v -> saveAndCloseButtonAction());
         noteDate.setOnClickListener(v -> setDateFromDatePicker(noteDate));
-
-        return noteEditTextFragment;
-    }
-
-    @Override
-    public void onPause() {
-        saveNoteChanges();
-        super.onPause();
     }
 
     private void saveAndCloseButtonAction() {

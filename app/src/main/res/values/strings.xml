@@ -5,4 +5,9 @@
     <string name="nothingSelected">Nothing selected</string>
     <string name="enterNoteTextHint">Enter note text</string>
     <string name="enterNoteTitleHint">Enter note title</string>
+    <string name="removeMenuItem">Remove chosen note</string>
+    <string name="about">about</string>
+    <string name="search">saerch</string>
+    <string name="addMenuItem">Add a new note</string>
+    <string name="aboutMenuItem">about</string>
 </resources>

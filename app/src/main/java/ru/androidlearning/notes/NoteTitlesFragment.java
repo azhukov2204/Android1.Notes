@@ -10,10 +10,14 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.squareup.otto.Subscribe;
 
@@ -42,7 +46,20 @@ public class NoteTitlesFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        //if (savedInstanceState == null)
+        setHasOptionsMenu(true); //используем меню
         return inflater.inflate(R.layout.fragment_note_titles, container, false);
+    }
+
+    @Override
+    public void onCreateOptionsMenu(@NonNull Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.note_titles_menu, menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        //todo реализовать логику поиска
+        return super.onOptionsItemSelected(item);
     }
 
     @Override
@@ -136,8 +153,7 @@ public class NoteTitlesFragment extends Fragment {
         newIndexOfNote = e.getNewIndexOfNote();
 
         if (getActivity() != null) {
-            if (requireActivity().getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE)
-            {
+            if (requireActivity().getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
                 needRecreateNoteTitlesList = false;
                 currentIndexOfNote = newIndexOfNote;
                 initNoteTitlesList();
