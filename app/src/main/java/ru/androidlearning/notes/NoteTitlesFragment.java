@@ -1,6 +1,5 @@
 package ru.androidlearning.notes;
 
-import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
@@ -11,6 +10,7 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -33,6 +33,8 @@ public class NoteTitlesFragment extends Fragment {
     private static final String BUNDLE_PARAM_KEY = "NoteIndex";
     private boolean needRecreateNoteTitlesList = false;
     private LinearLayout noteTitlesLinearLayout = null;
+
+    public static final String TITLES_LIST_BACKSTACK_NAME = "TitlesFragment";
 
     /*@Override
     public void onAttach(@NonNull Context context) {
@@ -65,6 +67,7 @@ public class NoteTitlesFragment extends Fragment {
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+
         if (savedInstanceState != null) {
             currentIndexOfNote = savedInstanceState.getInt(BUNDLE_PARAM_KEY);
         } else {
@@ -132,13 +135,22 @@ public class NoteTitlesFragment extends Fragment {
     }
 
     private void openNoteTextFragmentInPortland(boolean isNewNote) {
-        Intent noteTextActivityIntent = new Intent(getActivity(), NoteDetailActivity.class);
+        /*Intent noteTextActivityIntent = new Intent(getActivity(), NoteDetailActivity.class);
         if (isNewNote) {
             noteTextActivityIntent.putExtra(BUNDLE_PARAM_KEY, -1);
         } else {
             noteTextActivityIntent.putExtra(BUNDLE_PARAM_KEY, currentIndexOfNote);
         }
-        startActivity(noteTextActivityIntent);
+        startActivity(noteTextActivityIntent);*/
+
+        NoteDetailFragment noteDetailFragment = NoteDetailFragment.newInstance(currentIndexOfNote);
+        FragmentManager fragmentManager = requireActivity().getSupportFragmentManager();
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+        fragmentTransaction.addToBackStack(NoteTitlesFragment.TITLES_LIST_BACKSTACK_NAME);
+        fragmentTransaction.replace(R.id.noteTitlesFragmentContainer, noteDetailFragment);
+        fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
+        fragmentTransaction.commit();
+        //Log.d("getBackStackEntryCount", String.format("%d", fragmentManager.getBackStackEntryCount()));
     }
 
     private void openNoteTextFragmentInLandscape(boolean isNewNote) {
@@ -151,7 +163,7 @@ public class NoteTitlesFragment extends Fragment {
         FragmentManager fragmentManager = requireActivity().getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
         Objects.requireNonNull(getActivity()).findViewById(R.id.nothingSelectedTextView).setVisibility(View.GONE);
-        fragmentTransaction.replace(R.id.noteTextFragmentContainerMain, noteDetailFragment);
+        fragmentTransaction.replace(R.id.noteDetailFragmentContainerMain, noteDetailFragment);
         fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
         fragmentTransaction.commit();
     }

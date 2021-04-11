@@ -24,7 +24,7 @@ public class NoteDetailActivity extends AppCompatActivity {
                 NoteDetailFragment noteDetailFragment = NoteDetailFragment.newInstance(currentIndexOfNote);
                 FragmentManager fragmentManager = getSupportFragmentManager();
                 FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-                fragmentTransaction.replace(R.id.noteTextPortlandContainer, noteDetailFragment);
+                fragmentTransaction.replace(R.id.noteDetailContainerPortland, noteDetailFragment);
                 fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
                 fragmentTransaction.commit();
             }
