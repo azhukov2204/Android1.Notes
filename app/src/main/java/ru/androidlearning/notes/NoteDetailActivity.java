@@ -29,7 +29,5 @@ public class NoteDetailActivity extends AppCompatActivity {
                 fragmentTransaction.commit();
             }
         }
-
     }
-
 }

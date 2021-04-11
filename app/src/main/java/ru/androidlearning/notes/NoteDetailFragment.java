@@ -28,9 +28,6 @@ public class NoteDetailFragment extends Fragment {
     private int currentIndexOfNote;
     private static final String BUNDLE_PARAM_KEY = "NoteIndex";
 
-    public NoteDetailFragment() {
-    }
-
     public static NoteDetailFragment newInstance(int indexOfNote) {
         NoteDetailFragment fragment = new NoteDetailFragment();
         Bundle args = new Bundle();

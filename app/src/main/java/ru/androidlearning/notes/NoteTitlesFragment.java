@@ -34,22 +34,69 @@ public class NoteTitlesFragment extends Fragment {
     private boolean needRecreateNoteTitlesList = false;
     private LinearLayout noteTitlesLinearLayout = null;
 
+    /*@Override
+    public void onAttach(@NonNull Context context) {
+        super.onAttach(context);
+        if (needRecreateNoteTitlesList) {
+            needRecreateNoteTitlesList = false;
+            currentIndexOfNote = newIndexOfNote;
+            initNoteTitlesList();
+        }
+    }*/
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        SingleObjectsGetter.getBus().register(this);
+    }
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View noteTitlesFragment = inflater.inflate(R.layout.fragment_note_titles, container, false);
-
-        noteTitlesFragment.findViewById(R.id.createNewNoteButton).setOnClickListener(v -> initNewNoteButton());
-
-        return noteTitlesFragment;
+        return inflater.inflate(R.layout.fragment_note_titles, container, false);
     }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        initFragmentElements(view);
+    }
+
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        if (savedInstanceState != null) {
+            currentIndexOfNote = savedInstanceState.getInt(BUNDLE_PARAM_KEY);
+        } else {
+            currentIndexOfNote = 0;
+        }
+        if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
+            openNoteTextFragmentInLandscape(false);
+        }
+    }
+
+    @Override
+    public void onSaveInstanceState(@NonNull Bundle outState) {
+        outState.putInt(BUNDLE_PARAM_KEY, currentIndexOfNote);
+        super.onSaveInstanceState(outState);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (needRecreateNoteTitlesList) {
+            needRecreateNoteTitlesList = false;
+            currentIndexOfNote = newIndexOfNote;
+            initNoteTitlesList();
+        }
+    }
+
+    private void initFragmentElements(View view) {
+        view.findViewById(R.id.createNewNoteButton).setOnClickListener(v -> newNoteButtonAction());
         noteTitlesLinearLayout = view.findViewById(R.id.noteTitlesLayout);
         initNoteTitlesList();
     }
+
 
     private void initNoteTitlesList() {
         List<String> noteTitles = SingleObjectsGetter.getNotes(true).getAllNotesTitles();
@@ -72,11 +119,9 @@ public class NoteTitlesFragment extends Fragment {
         }
     }
 
-
-    private void initNewNoteButton() {
+    private void newNoteButtonAction() {
         openNoteTextFragment(true);
     }
-
 
     private void openNoteTextFragment(boolean isNewNote) {
         if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
@@ -94,7 +139,6 @@ public class NoteTitlesFragment extends Fragment {
             noteTextActivityIntent.putExtra(BUNDLE_PARAM_KEY, currentIndexOfNote);
         }
         startActivity(noteTextActivityIntent);
-
     }
 
     private void openNoteTextFragmentInLandscape(boolean isNewNote) {
@@ -112,34 +156,6 @@ public class NoteTitlesFragment extends Fragment {
         fragmentTransaction.commit();
     }
 
-    @Override
-    public void onSaveInstanceState(@NonNull Bundle outState) {
-        outState.putInt(BUNDLE_PARAM_KEY, currentIndexOfNote);
-        super.onSaveInstanceState(outState);
-    }
-
-
-    @Override
-    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-        if (savedInstanceState != null) {
-            currentIndexOfNote = savedInstanceState.getInt(BUNDLE_PARAM_KEY);
-        } else {
-            currentIndexOfNote = 0;
-        }
-        if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
-            openNoteTextFragmentInLandscape(false);
-        }
-    }
-
-
-    @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        SingleObjectsGetter.getBus().register(this);
-    }
-
-
     @Subscribe
     public void RecreateNoteTitlesList(EventUpdateNoteTitles e) {
         needRecreateNoteTitlesList = true;
@@ -152,26 +168,6 @@ public class NoteTitlesFragment extends Fragment {
                 currentIndexOfNote = newIndexOfNote;
                 initNoteTitlesList();
             }
-        }
-    }
-
-    @Override
-    public void onAttach(@NonNull Context context) {
-        super.onAttach(context);
-        if (needRecreateNoteTitlesList) {
-            needRecreateNoteTitlesList = false;
-            currentIndexOfNote = newIndexOfNote;
-            initNoteTitlesList();
-        }
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        if (needRecreateNoteTitlesList) {
-            needRecreateNoteTitlesList = false;
-            currentIndexOfNote = newIndexOfNote;
-            initNoteTitlesList();
         }
     }
 
