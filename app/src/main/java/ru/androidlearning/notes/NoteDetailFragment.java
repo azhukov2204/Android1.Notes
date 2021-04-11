@@ -1,11 +1,13 @@
 package ru.androidlearning.notes;
 
+import android.annotation.SuppressLint;
 import android.app.DatePickerDialog;
 import android.content.res.Configuration;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -30,6 +32,7 @@ public class NoteDetailFragment extends Fragment {
 
     private int currentIndexOfNote;
     private static final String BUNDLE_PARAM_KEY = "NoteIndex";
+    private boolean isDeleting = false;
 
     public static NoteDetailFragment newInstance(int indexOfNote) {
         NoteDetailFragment fragment = new NoteDetailFragment();
@@ -65,18 +68,29 @@ public class NoteDetailFragment extends Fragment {
         inflater.inflate(R.menu.note_details_menu, menu);
     }
 
+    @SuppressLint("NonConstantResourceId")
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        if (item.getItemId() == R.id.action_delete) {
-            Toast.makeText(getContext(), "Chosen remove", Toast.LENGTH_SHORT).show();
-            return true;
+        switch (item.getItemId()) {
+            case R.id.action_delete:
+                deleteCurrentNote();
+                Toast.makeText(getContext(), "Chosen remove", Toast.LENGTH_SHORT).show();
+                break;
+            case R.id.action_forward:
+                Toast.makeText(getContext(), "Chosen forward", Toast.LENGTH_SHORT).show();
+                break;
+            default: break;
         }
         return super.onOptionsItemSelected(item);
     }
 
     @Override
     public void onPause() {
-        saveNoteChanges();
+        if (!isDeleting) {
+            saveNoteChanges();
+        } else {
+            isDeleting = false;
+        }
         super.onPause();
     }
 
@@ -141,6 +155,18 @@ public class NoteDetailFragment extends Fragment {
                 Log.d("currentIndexOfNote", "currentIndexOfNote in NoteDetailFragment: " + currentIndexOfNote);
             }
         }
+    }
+
+    private void deleteCurrentNote() {
+        isDeleting = true;
+        SingleObjectsGetter.getNotes().deleteNoteByIndex(currentIndexOfNote);
+        if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
+            Objects.requireNonNull(getActivity()).onBackPressed();
+        } else {
+            FragmentManager fragmentManager = requireActivity().getSupportFragmentManager();
+            fragmentManager.beginTransaction().remove(this).commit();
+        }
+        SingleObjectsGetter.getBus().post(new EventUpdateNoteTitles(0));
     }
 
 }

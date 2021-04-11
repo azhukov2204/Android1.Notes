@@ -5,6 +5,7 @@ import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.widget.SearchView;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
@@ -46,7 +47,6 @@ public class NoteTitlesFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        //if (savedInstanceState == null)
         setHasOptionsMenu(true); //используем меню
         return inflater.inflate(R.layout.fragment_note_titles, container, false);
     }
@@ -54,11 +54,32 @@ public class NoteTitlesFragment extends Fragment {
     @Override
     public void onCreateOptionsMenu(@NonNull Menu menu, MenuInflater inflater) {
         inflater.inflate(R.menu.note_titles_menu, menu);
+        MenuItem search = menu.findItem(R.id.action_search);
+        SearchView searchText = (SearchView) search.getActionView();
+        searchText.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            // реагирует на конец ввода поиска
+            @Override
+            public boolean onQueryTextSubmit(String queryText) {
+                Toast.makeText(getContext(), "Search will be implemented later: " + queryText, Toast.LENGTH_SHORT).show();
+                return true;
+            }
+
+            // реагирует на нажатие каждой клавиши
+            @Override
+            public boolean onQueryTextChange(String queryText) {
+                Toast.makeText(getContext(), "Search will be implemented later: " + queryText, Toast.LENGTH_SHORT).show();
+                return true;
+            }
+        });
+
     }
 
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        //todo реализовать логику поиска
+
+        if (item.getItemId() == R.id.action_add) {
+            openNoteDetailFragment(true);
+        }
         return super.onOptionsItemSelected(item);
     }
 
