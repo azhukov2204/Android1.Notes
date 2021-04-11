@@ -57,7 +57,6 @@ public class NoteDetailFragment extends Fragment {
         View noteEditTextFragment = inflater.inflate(R.layout.fragment_note_detail, container, false);
         initViews(noteEditTextFragment);
 
-        //if (savedInstanceState == null)
         setHasOptionsMenu(true); //используем меню
 
         return noteEditTextFragment;
@@ -74,10 +73,9 @@ public class NoteDetailFragment extends Fragment {
         switch (item.getItemId()) {
             case R.id.action_delete:
                 deleteCurrentNote();
-                Toast.makeText(getContext(), "Chosen remove", Toast.LENGTH_SHORT).show();
                 break;
             case R.id.action_forward:
-                Toast.makeText(getContext(), "Chosen forward", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getContext(), "Forward will be implemented later...", Toast.LENGTH_SHORT).show();
                 break;
             default: break;
         }
@@ -166,7 +164,7 @@ public class NoteDetailFragment extends Fragment {
             FragmentManager fragmentManager = requireActivity().getSupportFragmentManager();
             fragmentManager.beginTransaction().remove(this).commit();
         }
-        SingleObjectsGetter.getBus().post(new EventUpdateNoteTitles(0));
+        SingleObjectsGetter.getBus().post(new EventUpdateNoteTitles(-1));
     }
 
 }

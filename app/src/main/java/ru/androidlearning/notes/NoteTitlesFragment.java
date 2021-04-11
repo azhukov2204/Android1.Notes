@@ -30,8 +30,8 @@ import ru.androidlearning.notes.types.EventUpdateNoteTitles;
 
 public class NoteTitlesFragment extends Fragment {
 
-    private int currentIndexOfNote = 0;
-    private int newIndexOfNote = 0;
+    private int currentIndexOfNote = -1;
+    private int newIndexOfNote = -1;
     private static final String BUNDLE_PARAM_KEY = "NoteIndex";
     private boolean needRecreateNoteTitlesList = false;
     private LinearLayout noteTitlesLinearLayout = null;
@@ -96,10 +96,12 @@ public class NoteTitlesFragment extends Fragment {
         if (savedInstanceState != null) {
             currentIndexOfNote = savedInstanceState.getInt(BUNDLE_PARAM_KEY);
         } else {
-            currentIndexOfNote = 0;
+            currentIndexOfNote = -1;
         }
         if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
-            openNoteDetailFragment(false);
+            if (currentIndexOfNote >= 0) {
+                openNoteDetailFragment(false);
+            }
         }
     }
 
