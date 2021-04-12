@@ -22,4 +22,7 @@
     <string name="sideMenuTitle">Notes APP</string>
     <string name="settingsFragmentTitle">There will be application settings</string>
     <string name="aboutFragmentText">About</string>
+    <string name="userAvatarImageView">User Avatar</string>
+    <string name="userLoginTextView">Vasya Pupkin</string>
+    <string name="userMailView">vasya@somehost.com</string>
 </resources>
