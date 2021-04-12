@@ -171,7 +171,7 @@ public class NoteTitlesFragment extends Fragment {
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
 
         if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
-            requireActivity().findViewById(R.id.nothingSelectedTextView).setVisibility(View.GONE);
+            //requireActivity().findViewById(R.id.nothingSelectedTextView).setVisibility(View.GONE);
             fragmentTransaction.replace(R.id.noteDetailFragmentContainer, noteDetailFragment);
         } else {
             fragmentTransaction.addToBackStack(NoteTitlesFragment.TITLES_LIST_BACKSTACK_NAME);

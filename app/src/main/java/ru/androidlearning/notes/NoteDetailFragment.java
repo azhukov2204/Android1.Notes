@@ -146,24 +146,32 @@ public class NoteDetailFragment extends Fragment {
                 }
             } else {
                 //Создание новой заметки:
-                SingleObjectsGetter.getNotes().addNote(noteTitle.getText().toString(), noteText.getText().toString(), noteDate.getText().toString());
-                currentIndexOfNote = SingleObjectsGetter.getNotes().getAllNotesTitles().size() - 1;
-                SingleObjectsGetter.getBus().post(new EventUpdateNoteTitles(currentIndexOfNote));
-                Log.d("currentIndexOfNote", "currentIndexOfNote in NoteDetailFragment: " + currentIndexOfNote);
+                if (noteTitle.getText().toString().isEmpty() && noteText.getText().toString().isEmpty()) {
+                    Toast.makeText(getContext(), "Nothing to save...", Toast.LENGTH_SHORT).show();
+                } else {
+                    SingleObjectsGetter.getNotes().addNote(noteTitle.getText().toString(), noteText.getText().toString(), noteDate.getText().toString());
+                    currentIndexOfNote = SingleObjectsGetter.getNotes().getAllNotesTitles().size() - 1;
+                    SingleObjectsGetter.getBus().post(new EventUpdateNoteTitles(currentIndexOfNote));
+                    Log.d("currentIndexOfNote", "currentIndexOfNote in NoteDetailFragment: " + currentIndexOfNote);
+                }
             }
         }
     }
 
     private void deleteCurrentNote() {
-        isDeleting = true;
-        SingleObjectsGetter.getNotes().deleteNoteByIndex(currentIndexOfNote);
-        if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
-            Objects.requireNonNull(getActivity()).onBackPressed();
+        if (currentIndexOfNote >= 0) {
+            isDeleting = true;
+            SingleObjectsGetter.getNotes().deleteNoteByIndex(currentIndexOfNote);
+            if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
+                Objects.requireNonNull(getActivity()).onBackPressed();
+            } else {
+                FragmentManager fragmentManager = requireActivity().getSupportFragmentManager();
+                fragmentManager.beginTransaction().remove(this).commit();
+            }
+            SingleObjectsGetter.getBus().post(new EventUpdateNoteTitles(-1));
         } else {
-            FragmentManager fragmentManager = requireActivity().getSupportFragmentManager();
-            fragmentManager.beginTransaction().remove(this).commit();
+            Toast.makeText(getContext(), "Nothing to delete...", Toast.LENGTH_SHORT).show();
         }
-        SingleObjectsGetter.getBus().post(new EventUpdateNoteTitles(-1));
     }
 
 }
