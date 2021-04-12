@@ -29,6 +29,19 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        checkInstanceStateAndHideOrShowNoteDetailFragmentContainer(savedInstanceState);
+        openNoteTitlesFragmentAtFirstRun(savedInstanceState);
+        removeUnnecessaryNoteDetailFragment(); //при смене ориентации на портретную надо удалить фрагмент из noteDetailFragmentContainer, иначе в ToolBar останется его меню
+        initView();
+    }
+
+    @Override
+    protected void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putBoolean(IS_HIDDEN_NOTE_DETAIL_CONTAINER_BUNDLE_KEY, isHiddenNoteDetailContainer);
+    }
+
+    private void checkInstanceStateAndHideOrShowNoteDetailFragmentContainer(Bundle savedInstanceState) {
         if (savedInstanceState != null) {
             if (savedInstanceState.getBoolean(IS_HIDDEN_NOTE_DETAIL_CONTAINER_BUNDLE_KEY)) {
                 Log.d("Is Hidden", "IS_HIDDEN_NOTE_DETAIL_CONTAINER_BUNDLE_KEY - true");
@@ -40,10 +53,6 @@ public class MainActivity extends AppCompatActivity {
         } else {
             Log.d("Is Hidden", "IS_HIDDEN_NOTE_DETAIL_CONTAINER_BUNDLE_KEY - none");
         }
-
-        openNoteTitlesFragmentAtFirstRun(savedInstanceState);
-        removeUnnecessaryNoteDetailFragment(); //при смене ориентации на портретную надо удалить фрагмент из noteDetailFragmentContainer, иначе в ToolBar останется его меню
-        initView();
     }
 
     private void openNoteTitlesFragmentAtFirstRun(Bundle savedInstanceState) {
@@ -107,16 +116,29 @@ public class MainActivity extends AppCompatActivity {
                 openSettingsFragment();
                 return true;
             case R.id.action_about:
+                openAboutFragment();
                 return true;
         }
         return false;
     }
 
     private void openSettingsFragment() {
+        clearBackStack();
         hideNoteDetailFragmentContainerInLandscape();
         Fragment settingsFragment = new SettingsFragment();
-        FragmentManager fragmentManager = getSupportFragmentManager();
-        fragmentManager.beginTransaction()
+
+        getSupportFragmentManager().beginTransaction()
+                .replace(R.id.notesUniversalFragmentContainer, settingsFragment)
+                .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
+                .commit();
+    }
+
+    private void openAboutFragment() {
+        clearBackStack();
+        hideNoteDetailFragmentContainerInLandscape();
+        Fragment settingsFragment = new AboutFragment();
+
+        getSupportFragmentManager().beginTransaction()
                 .replace(R.id.notesUniversalFragmentContainer, settingsFragment)
                 .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
                 .commit();
@@ -125,41 +147,43 @@ public class MainActivity extends AppCompatActivity {
     private void openNotesFragment() {
         showNoteDetailFragmentContainerInLandscape();
         NoteTitlesFragment noteTitlesFragment = new NoteTitlesFragment();
-        FragmentManager fragmentManager = getSupportFragmentManager();
-        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-        fragmentTransaction.replace(R.id.notesUniversalFragmentContainer, noteTitlesFragment);
-        fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
-        fragmentTransaction.commit();
+
+        getSupportFragmentManager().beginTransaction()
+                .replace(R.id.notesUniversalFragmentContainer, noteTitlesFragment)
+                .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
+                .commit();
     }
 
     private void hideNoteDetailFragmentContainerInLandscape() {
+        isHiddenNoteDetailContainer = true;
+        Log.d("Is Hidden", "IS_HIDDEN_NOTE_DETAIL_CONTAINER_BUNDLE_KEY - set to true");
         if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
             LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT);
             FrameLayout notesUniversalFragmentContainer = findViewById(R.id.notesUniversalFragmentContainer);
             notesUniversalFragmentContainer.setLayoutParams(params);
-
-            isHiddenNoteDetailContainer = true;
-            Log.d("Is Hidden", "IS_HIDDEN_NOTE_DETAIL_CONTAINER_BUNDLE_KEY - set to true");
         }
     }
 
     private void showNoteDetailFragmentContainerInLandscape() {
+        isHiddenNoteDetailContainer = false;
+        Log.d("Is Hidden", "IS_HIDDEN_NOTE_DETAIL_CONTAINER_BUNDLE_KEY - set to false");
         if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
             LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.MATCH_PARENT);
             params.weight = 1;
             FrameLayout notesUniversalFragmentContainer = findViewById(R.id.notesUniversalFragmentContainer);
             notesUniversalFragmentContainer.setLayoutParams(params);
-
-            isHiddenNoteDetailContainer = false;
-            Log.d("Is Hidden", "IS_HIDDEN_NOTE_DETAIL_CONTAINER_BUNDLE_KEY - set to false");
         }
     }
 
-    @Override
-    protected void onSaveInstanceState(@NonNull Bundle outState) {
-        super.onSaveInstanceState(outState);
-        outState.putBoolean(IS_HIDDEN_NOTE_DETAIL_CONTAINER_BUNDLE_KEY, isHiddenNoteDetailContainer);
+    private void clearBackStack() {
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        if (fragmentManager.getBackStackEntryCount() > 0) {
+            FragmentManager.BackStackEntry entry = fragmentManager.getBackStackEntryAt(0);
+            fragmentManager.popBackStack(entry.getId(), FragmentManager.POP_BACK_STACK_INCLUSIVE);
+        }
     }
+
+
 }
 
 
