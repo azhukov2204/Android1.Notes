@@ -169,6 +169,7 @@ public class NoteTitlesFragment extends Fragment {
 
         FragmentManager fragmentManager = requireActivity().getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+        fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_NONE);
 
         if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
             //requireActivity().findViewById(R.id.nothingSelectedTextView).setVisibility(View.GONE);
@@ -177,7 +178,6 @@ public class NoteTitlesFragment extends Fragment {
             fragmentTransaction.addToBackStack(NoteTitlesFragment.TITLES_LIST_BACKSTACK_NAME);
             fragmentTransaction.replace(R.id.notesUniversalFragmentContainer, noteDetailFragment);
         }
-        fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
         fragmentTransaction.commit();
     }
 

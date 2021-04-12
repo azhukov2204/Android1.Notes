@@ -39,8 +39,6 @@ public class MainActivity extends AppCompatActivity {
             Fragment noteDetailFragment = fragmentManager.findFragmentById(R.id.noteDetailFragmentContainer);
 
             if (noteDetailFragment != null) {
-                System.out.println("Fragment: " + noteDetailFragment.toString());
-                System.out.println("isVisible: " + noteDetailFragment.isVisible());
                 fragmentManager.beginTransaction().remove(noteDetailFragment).commit();
             }
         }
