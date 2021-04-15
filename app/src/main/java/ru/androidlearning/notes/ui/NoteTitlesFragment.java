@@ -1,4 +1,4 @@
-package ru.androidlearning.notes;
+package ru.androidlearning.notes.ui;
 
 import android.annotation.SuppressLint;
 import android.content.res.Configuration;
@@ -10,6 +10,8 @@ import androidx.appcompat.widget.SearchView;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -17,7 +19,6 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -25,6 +26,7 @@ import com.squareup.otto.Subscribe;
 
 import java.util.List;
 
+import ru.androidlearning.notes.R;
 import ru.androidlearning.notes.models.SingleObjectsGetter;
 import ru.androidlearning.notes.types.EventUpdateNoteTitles;
 
@@ -35,7 +37,7 @@ public class NoteTitlesFragment extends Fragment {
     private int newIndexOfNote = -1;
     private static final String BUNDLE_PARAM_KEY = "NoteIndex";
     private boolean needRecreateNoteTitlesList = false;
-    private LinearLayout noteTitlesLinearLayout = null;
+    private RecyclerView noteTitlesLinearLayout = null;
 
     public static final String TITLES_LIST_BACKSTACK_NAME = "TitlesFragment";
 
@@ -49,7 +51,23 @@ public class NoteTitlesFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         setHasOptionsMenu(true); //используем меню
-        return inflater.inflate(R.layout.fragment_note_titles, container, false);
+        View view = inflater.inflate(R.layout.fragment_note_titles, container, false);
+        RecyclerView noteTitlesListRV = view.findViewById(R.id.noteTitlesLayout);
+        initNoteTitlesListRV(noteTitlesListRV);
+        return view;
+    }
+
+    private void initNoteTitlesListRV(RecyclerView noteTitlesListRV) {
+        noteTitlesListRV.setHasFixedSize(true);
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
+        noteTitlesListRV.setLayoutManager(linearLayoutManager);
+        NoteTitlesAdapter noteTitlesAdapter = new NoteTitlesAdapter(SingleObjectsGetter.getNotes(true));
+        noteTitlesListRV.setAdapter(noteTitlesAdapter);
+        noteTitlesAdapter.setOnItemClickListener((view, position) -> {
+            currentIndexOfNote = position;
+            openNoteDetailFragment(false);
+        });
+
     }
 
     @Override
@@ -97,7 +115,7 @@ public class NoteTitlesFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        initViews(view);
+        //initViews(view);
     }
 
     @Override
@@ -128,7 +146,7 @@ public class NoteTitlesFragment extends Fragment {
         if (needRecreateNoteTitlesList) {
             needRecreateNoteTitlesList = false;
             currentIndexOfNote = newIndexOfNote;
-            initNoteTitlesList();
+            //initNoteTitlesList();
         }
     }
 
@@ -183,7 +201,7 @@ public class NoteTitlesFragment extends Fragment {
 
     @Subscribe
     public void RecreateNoteTitlesList(EventUpdateNoteTitles e) {
-        needRecreateNoteTitlesList = true;
+        /*needRecreateNoteTitlesList = true;
         newIndexOfNote = e.getNewIndexOfNote();
 
         if (getActivity() != null) {
@@ -192,7 +210,7 @@ public class NoteTitlesFragment extends Fragment {
                 currentIndexOfNote = newIndexOfNote;
                 initNoteTitlesList();
             }
-        }
+        }*/
     }
 
 }

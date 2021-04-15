@@ -1,4 +1,4 @@
-package ru.androidlearning.notes;
+package ru.androidlearning.notes.ui;
 
 import android.os.Bundle;
 
@@ -7,6 +7,8 @@ import androidx.fragment.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+
+import ru.androidlearning.notes.R;
 
 public class AboutFragment extends Fragment {
 

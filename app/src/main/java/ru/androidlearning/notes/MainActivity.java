@@ -19,6 +19,10 @@ import android.widget.LinearLayout;
 
 import com.google.android.material.navigation.NavigationView;
 
+import ru.androidlearning.notes.ui.AboutFragment;
+import ru.androidlearning.notes.ui.NoteTitlesFragment;
+import ru.androidlearning.notes.ui.SettingsFragment;
+
 public class MainActivity extends AppCompatActivity {
 
     private final static String IS_HIDDEN_NOTE_DETAIL_CONTAINER_BUNDLE_KEY = "isHiddenNoteDetailContainer";

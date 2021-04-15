@@ -54,6 +54,10 @@ public class Notes {
         return notesList.get(index).getNoteCreatedDate();
     }
 
+    public NoteEntry getNoteEntryByIndex(int index) {
+        return notesList.get(index);
+    }
+
     public List<String> getAllNotesTitles() {
         List<String> allNoteTitles = new ArrayList<>();
         for (NoteEntry note : notesList) {
