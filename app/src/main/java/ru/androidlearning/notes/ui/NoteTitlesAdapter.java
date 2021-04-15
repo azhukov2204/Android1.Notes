@@ -9,7 +9,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import ru.androidlearning.notes.R;
-import ru.androidlearning.notes.models.Notes;
+import ru.androidlearning.notes.data.Notes;
 import ru.androidlearning.notes.types.NoteEntry;
 
 public class NoteTitlesAdapter extends RecyclerView.Adapter<NoteTitlesAdapter.ViewHolder> {
@@ -64,6 +64,5 @@ public class NoteTitlesAdapter extends RecyclerView.Adapter<NoteTitlesAdapter.Vi
                 noteTitle.setText(noteEntry.getNoteTitle());
             }
     }
-
 
 }
