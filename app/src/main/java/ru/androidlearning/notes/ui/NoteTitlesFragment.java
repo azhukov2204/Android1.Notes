@@ -7,9 +7,11 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.SearchView;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
+import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -134,6 +136,12 @@ public class NoteTitlesFragment extends Fragment {
         noteTitlesListRV.setLayoutManager(linearLayoutManager);
         noteTitlesAdapter = new NoteTitlesAdapter(SingleObjectsGetter.getNotes(true));
         noteTitlesListRV.setAdapter(noteTitlesAdapter);
+
+        DividerItemDecoration itemDecoration = new DividerItemDecoration(getContext(), LinearLayoutManager.VERTICAL);
+
+        itemDecoration.setDrawable(ContextCompat.getDrawable(getActivity(), R.drawable.note_cards_separator));
+        noteTitlesListRV.addItemDecoration(itemDecoration);
+
         noteTitlesAdapter.setOnItemClickListener((view, position) -> {
             currentIndexOfNote = position;
             openNoteDetailFragment(false);

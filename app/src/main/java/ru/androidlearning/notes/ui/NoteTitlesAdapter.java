@@ -54,22 +54,23 @@ public class NoteTitlesAdapter extends RecyclerView.Adapter<NoteTitlesAdapter.Vi
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
-            noteTitle =itemView.findViewById(R.id.noteCardTitle);
+            noteTitle = itemView.findViewById(R.id.noteCardTitle);
             noteDate = itemView.findViewById(R.id.noteCardDate);
             noteDetails = itemView.findViewById(R.id.noteCardDetail);
 
-            noteTitle.setOnClickListener(v -> {
+            itemView.findViewById(R.id.noteCardView).setOnClickListener(v -> {
                 if (onItemClickListener != null) {
                     onItemClickListener.onItemClick(v, getAdapterPosition());
                 }
             });
+
         }
 
         public void setData(NoteEntry noteEntry) {
-                noteTitle.setText(noteEntry.getNoteTitle());
-                noteDate.setText(noteEntry.getNoteCreatedDate());
-                noteDetails.setText(noteEntry.getNoteText());
-            }
+            noteTitle.setText(noteEntry.getNoteTitle());
+            noteDate.setText(noteEntry.getNoteCreatedDate());
+            noteDetails.setText(noteEntry.getNoteText());
+        }
     }
 
 }
