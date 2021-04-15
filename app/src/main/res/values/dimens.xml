@@ -13,4 +13,8 @@
     <dimen name="noteDetailFragmentDefaultMargin">5dp</dimen>
     <dimen name="aboutFragmentTextSize">40sp</dimen>
     <dimen name="contentMainTextSize">30sp</dimen>
+    <dimen name="defaultCardItemMargin">5dp</dimen>
+    <dimen name="noteCardDateTextSize">15sp</dimen>
+    <dimen name="noteCardDetailTextSize">20sp</dimen>
+    <dimen name="noteCardTitleTextSize">20sp</dimen>
 </resources>

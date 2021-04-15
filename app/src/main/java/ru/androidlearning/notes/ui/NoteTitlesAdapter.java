@@ -24,7 +24,7 @@ public class NoteTitlesAdapter extends RecyclerView.Adapter<NoteTitlesAdapter.Vi
     @NonNull
     @Override
     public NoteTitlesAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int i) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.note_title_item, parent, false);
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.note_card_item, parent, false);
         return new ViewHolder(view);
     }
 
@@ -49,10 +49,15 @@ public class NoteTitlesAdapter extends RecyclerView.Adapter<NoteTitlesAdapter.Vi
 
     public class ViewHolder extends RecyclerView.ViewHolder {
         TextView noteTitle;
+        TextView noteDate;
+        TextView noteDetails;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
-            noteTitle =itemView.findViewById(R.id.noteTitleTextView);
+            noteTitle =itemView.findViewById(R.id.noteCardTitle);
+            noteDate = itemView.findViewById(R.id.noteCardDate);
+            noteDetails = itemView.findViewById(R.id.noteCardDetail);
+
             noteTitle.setOnClickListener(v -> {
                 if (onItemClickListener != null) {
                     onItemClickListener.onItemClick(v, getAdapterPosition());
@@ -62,6 +67,8 @@ public class NoteTitlesAdapter extends RecyclerView.Adapter<NoteTitlesAdapter.Vi
 
         public void setData(NoteEntry noteEntry) {
                 noteTitle.setText(noteEntry.getNoteTitle());
+                noteDate.setText(noteEntry.getNoteCreatedDate());
+                noteDetails.setText(noteEntry.getNoteText());
             }
     }
 
