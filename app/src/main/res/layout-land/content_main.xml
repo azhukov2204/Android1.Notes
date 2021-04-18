@@ -3,20 +3,22 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="horizontal"
     android:weightSum="3"
+    app:layout_behavior="@string/appbar_scrolling_view_behavior"
+    tools:showIn="@layout/activity_main"
     tools:context=".MainActivity"
     android:baselineAligned="false">
 
-    <fragment
-        android:id="@+id/noteTitlesFragment"
-        android:name="ru.androidlearning.notes.NoteTitlesFragment"
+    <FrameLayout
+        android:id="@+id/notesUniversalFragmentContainer"
         android:layout_width="0dp"
         android:layout_height="match_parent"
         android:layout_weight="1"/>
 
     <FrameLayout
-        android:id="@+id/noteTextFragmentContainerMain"
+        android:id="@+id/noteDetailFragmentContainer"
         android:layout_width="0dp"
         android:layout_height="match_parent"
         android:layout_weight="2">
@@ -24,7 +26,7 @@
             android:id="@+id/nothingSelectedTextView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="30sp"
+            android:textSize="@dimen/contentMainTextSize"
             android:layout_gravity="center"
             android:text="@string/nothingSelected"/>
     </FrameLayout>

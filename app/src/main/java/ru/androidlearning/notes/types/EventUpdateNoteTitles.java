@@ -1,13 +1,13 @@
 package ru.androidlearning.notes.types;
 
 public class EventUpdateNoteTitles {
-    private final int currentIndexOfNote;
+    private final int newIndexOfNote;
 
     public EventUpdateNoteTitles(int currentIndexOfNote) {
-        this.currentIndexOfNote = currentIndexOfNote;
+        this.newIndexOfNote = currentIndexOfNote;
     }
 
-    public int getCurrentIndexOfNote() {
-        return currentIndexOfNote;
+    public int getNewIndexOfNote() {
+        return newIndexOfNote;
     }
 }

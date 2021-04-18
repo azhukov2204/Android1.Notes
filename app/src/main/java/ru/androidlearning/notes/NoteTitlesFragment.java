@@ -1,25 +1,29 @@
 package ru.androidlearning.notes;
 
-import android.content.Intent;
+import android.annotation.SuppressLint;
 import android.content.res.Configuration;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.widget.SearchView;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.squareup.otto.Subscribe;
 
 import java.util.List;
-import java.util.Objects;
 
 import ru.androidlearning.notes.models.SingleObjectsGetter;
 import ru.androidlearning.notes.types.EventUpdateNoteTitles;
@@ -28,32 +32,119 @@ import ru.androidlearning.notes.types.EventUpdateNoteTitles;
 public class NoteTitlesFragment extends Fragment {
 
     private int currentIndexOfNote = -1;
+    private int newIndexOfNote = -1;
     private static final String BUNDLE_PARAM_KEY = "NoteIndex";
+    private boolean needRecreateNoteTitlesList = false;
+    private LinearLayout noteTitlesLinearLayout = null;
+
+    public static final String TITLES_LIST_BACKSTACK_NAME = "TitlesFragment";
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        SingleObjectsGetter.getBus().register(this);  //шина для взаимодействия компонентов приложения
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View noteTitlesFragment = inflater.inflate(R.layout.fragment_note_titles, container, false);
+        setHasOptionsMenu(true); //используем меню
+        return inflater.inflate(R.layout.fragment_note_titles, container, false);
+    }
 
-        noteTitlesFragment.findViewById(R.id.createNewNoteButton).setOnClickListener(v -> initNewNoteButton());
+    @Override
+    public void onCreateOptionsMenu(@NonNull Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.note_titles_menu, menu);
+        MenuItem search = menu.findItem(R.id.action_search);
+        SearchView searchText = (SearchView) search.getActionView();
+        searchText.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            // реагирует на конец ввода поиска
+            @Override
+            public boolean onQueryTextSubmit(String queryText) {
+                Toast.makeText(getContext(), "Search will be implemented later: " + queryText, Toast.LENGTH_SHORT).show();
+                return true;
+            }
 
-        return noteTitlesFragment;
+            // реагирует на нажатие каждой клавиши
+            @Override
+            public boolean onQueryTextChange(String queryText) {
+                Toast.makeText(getContext(), "Search will be implemented later: " + queryText, Toast.LENGTH_SHORT).show();
+                return true;
+            }
+        });
+    }
+
+    @SuppressLint("NonConstantResourceId")
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.action_add:
+                openNoteDetailFragment(true);
+                return true;
+            case R.id.action_sort_none:
+                Toast.makeText(getContext(), "Sort none will be implemented later...", Toast.LENGTH_SHORT).show();
+                return true;
+            case R.id.action_sort_ascending:
+                Toast.makeText(getContext(), "Sort ascending will be implemented later...", Toast.LENGTH_SHORT).show();
+                return true;
+            case R.id.action_sort_descending:
+                Toast.makeText(getContext(), "Sort descending will be implemented later...", Toast.LENGTH_SHORT).show();
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        initNoteTitlesList(view);
+        initViews(view);
     }
 
-    private void initNoteTitlesList(View view) {
-        LinearLayout noteTitlesLinearLayout = view.findViewById(R.id.noteTitlesLayout);
-        List<String> noteTitles = SingleObjectsGetter.getNotes(true).getAllNotesTitles();
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
 
+        if (savedInstanceState != null) {
+            currentIndexOfNote = savedInstanceState.getInt(BUNDLE_PARAM_KEY);
+        } else {
+            currentIndexOfNote = -1;
+        }
+        if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
+            if (currentIndexOfNote >= 0) {
+                openNoteDetailFragment(false);
+            }
+        }
+    }
+
+    @Override
+    public void onSaveInstanceState(@NonNull Bundle outState) {
+        outState.putInt(BUNDLE_PARAM_KEY, currentIndexOfNote);
+        super.onSaveInstanceState(outState);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (needRecreateNoteTitlesList) {
+            needRecreateNoteTitlesList = false;
+            currentIndexOfNote = newIndexOfNote;
+            initNoteTitlesList();
+        }
+    }
+
+    private void initViews(View view) {
+        view.findViewById(R.id.createNewNoteButton).setOnClickListener(v -> openNoteDetailFragment(true));
+        noteTitlesLinearLayout = view.findViewById(R.id.noteTitlesLayout);
+        initNoteTitlesList();
+    }
+
+    private void initNoteTitlesList() {
+        List<String> noteTitles = SingleObjectsGetter.getNotes(true).getAllNotesTitles();
+        LayoutInflater inflater = getLayoutInflater();
+        noteTitlesLinearLayout.removeAllViews();
         int noteTitleIndex = 0;
         for (String noteTitle : noteTitles) {
             //TextView для отображения заголовков заметок будем брать из "шаблона"
-            LayoutInflater inflater = getLayoutInflater();
             View noteTitleItemLayout = inflater.inflate(R.layout.note_title_item, noteTitlesLinearLayout, false);
             TextView noteTitleView = noteTitleItemLayout.findViewById(R.id.noteTitleTextView);
             noteTitleView.setText(noteTitle);
@@ -62,82 +153,46 @@ public class NoteTitlesFragment extends Fragment {
 
             noteTitleItemLayout.setOnClickListener(v -> {
                 currentIndexOfNote = finalNoteTitleIndex;
-                openNoteTextFragment(false);
+                openNoteDetailFragment(false);
             });
             noteTitleIndex++;
         }
     }
 
-    private void initNewNoteButton() {
-        currentIndexOfNote = -1; //-1 - c таким индекмом будет вызвана логика создания новой заметки
-        openNoteTextFragment(true);
-    }
-
-
-    private void openNoteTextFragment(boolean isNewNote) {
-        System.out.println("currentIndexOfNote: " + currentIndexOfNote);
-        if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
-            openNoteTextFragmentInLandscape(isNewNote);
+    private void openNoteDetailFragment(boolean isNewNote) {
+        NoteDetailFragment noteDetailFragment;
+        if (isNewNote) {
+            noteDetailFragment = NoteDetailFragment.newInstance(-1);
         } else {
-            openNoteTextFragmentInPortland();
+            noteDetailFragment = NoteDetailFragment.newInstance(currentIndexOfNote);
         }
-    }
 
-    private void openNoteTextFragmentInPortland() {
-        Intent noteTextActivityIntent = new Intent(getActivity(), NoteDetailActivity.class);
-        noteTextActivityIntent.putExtra(BUNDLE_PARAM_KEY, currentIndexOfNote);
-        startActivity(noteTextActivityIntent);
+        FragmentManager fragmentManager = requireActivity().getSupportFragmentManager();
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+        fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_NONE);
 
-    }
-
-    private void openNoteTextFragmentInLandscape(boolean isNewNote) {
-        if (currentIndexOfNote >= 0 || isNewNote) {
-            NoteDetailFragment noteDetailFragment = NoteDetailFragment.newInstance(currentIndexOfNote);
-            FragmentManager fragmentManager = requireActivity().getSupportFragmentManager();
-            FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-            Objects.requireNonNull(getActivity()).findViewById(R.id.nothingSelectedTextView).setVisibility(View.GONE);
-            fragmentTransaction.replace(R.id.noteTextFragmentContainerMain, noteDetailFragment);
-            fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
-            fragmentTransaction.commit();
-        }
-    }
-
-    @Override
-    public void onSaveInstanceState(@NonNull Bundle outState) {
-        outState.putInt(BUNDLE_PARAM_KEY, currentIndexOfNote);
-        System.out.println("Saved: " + currentIndexOfNote);
-        super.onSaveInstanceState(outState);
-    }
-
-
-    @Override
-    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-        if (savedInstanceState != null) {
-            currentIndexOfNote = savedInstanceState.getInt(BUNDLE_PARAM_KEY);
-            System.out.println("read currentIndexOfNote: " + currentIndexOfNote);
-
-        } else {
-            currentIndexOfNote = -1;
-            System.out.println("currentIndexOfNote is null: " + currentIndexOfNote);
-        }
         if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
-            openNoteTextFragmentInLandscape(false);
+            //requireActivity().findViewById(R.id.nothingSelectedTextView).setVisibility(View.GONE);
+            fragmentTransaction.replace(R.id.noteDetailFragmentContainer, noteDetailFragment);
+        } else {
+            fragmentTransaction.addToBackStack(NoteTitlesFragment.TITLES_LIST_BACKSTACK_NAME);
+            fragmentTransaction.replace(R.id.notesUniversalFragmentContainer, noteDetailFragment);
         }
+        fragmentTransaction.commit();
     }
-
-
-    @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        SingleObjectsGetter.getBus().register(this);
-    }
-
 
     @Subscribe
     public void RecreateNoteTitlesList(EventUpdateNoteTitles e) {
-        System.out.println("RecreateNoteTitlesList");
-        //todo сделать обновление списка заголовков
+        needRecreateNoteTitlesList = true;
+        newIndexOfNote = e.getNewIndexOfNote();
+
+        if (getActivity() != null) {
+            if (requireActivity().getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
+                needRecreateNoteTitlesList = false;
+                currentIndexOfNote = newIndexOfNote;
+                initNoteTitlesList();
+            }
+        }
     }
 
 }

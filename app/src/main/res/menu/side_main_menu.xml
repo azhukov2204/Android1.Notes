@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/action_notes"
+        android:icon="@android:drawable/ic_menu_edit"
+        android:orderInCategory="10"
+        android:title="@string/notesMenuItem" />
+    <item
+        android:id="@+id/action_settings"
+        android:icon="@android:drawable/ic_menu_preferences"
+        android:orderInCategory="20"
+        android:title="@string/settingsMenuItem" />
+    <item
+        android:id="@+id/action_about"
+        android:icon="@android:drawable/ic_dialog_info"
+        android:orderInCategory="30"
+        android:title="@string/aboutMenuItem" />
+</menu>

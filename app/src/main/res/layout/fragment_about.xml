@@ -3,15 +3,13 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".DatePickerFragment">
+    tools:context=".AboutFragment">
 
-    <DatePicker
-        android:id="@+id/datePicker"
+    <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="center|top"
-        android:background="@color/white"
-        android:calendarViewShown="true"
-        android:spinnersShown="true" />
+        android:layout_gravity="center"
+        android:textSize="@dimen/aboutFragmentTextSize"
+        android:text="@string/aboutFragmentText" />
 
 </FrameLayout>
