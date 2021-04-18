@@ -10,7 +10,6 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import ru.androidlearning.notes.R;
 import ru.androidlearning.notes.data.Notes;
-import ru.androidlearning.notes.types.NoteEntry;
 
 public class NoteTitlesAdapter extends RecyclerView.Adapter<NoteTitlesAdapter.ViewHolder> {
 
@@ -66,7 +65,7 @@ public class NoteTitlesAdapter extends RecyclerView.Adapter<NoteTitlesAdapter.Vi
 
         }
 
-        public void setData(NoteEntry noteEntry) {
+        public void setData(Notes.NoteEntry noteEntry) {
             noteTitle.setText(noteEntry.getNoteTitle());
             noteDate.setText(noteEntry.getNoteCreatedDate());
             noteDetails.setText(noteEntry.getNoteText());

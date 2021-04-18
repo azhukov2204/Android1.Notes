@@ -26,8 +26,9 @@ import java.util.Locale;
 import java.util.Objects;
 
 import ru.androidlearning.notes.R;
+import ru.androidlearning.notes.data.ChangeNoteTypes;
 import ru.androidlearning.notes.data.SingleObjectsGetter;
-import ru.androidlearning.notes.types.EventUpdateNoteTitles;
+import ru.androidlearning.notes.data.EventChangeNote;
 
 public class NoteDetailFragment extends Fragment {
 
@@ -142,7 +143,7 @@ public class NoteDetailFragment extends Fragment {
                 SingleObjectsGetter.getNotes().updateNoteByIndex(currentIndexOfNote, noteTitle.getText().toString(), noteText.getText().toString(), noteDate.getText().toString());
 
                 if (!oldTitle.equals(noteTitle.getText().toString())) { //если заголовок изменился - тоже делаем обновление списка
-                    SingleObjectsGetter.getBus().post(new EventUpdateNoteTitles(currentIndexOfNote));
+                    SingleObjectsGetter.getBus().post(new EventChangeNote(currentIndexOfNote, ChangeNoteTypes.UPDATE));
                     Log.d("currentIndexOfNote", "currentIndexOfNote in NoteDetailFragment: " + currentIndexOfNote);
                 }
             } else {
@@ -152,7 +153,7 @@ public class NoteDetailFragment extends Fragment {
                 } else {
                     SingleObjectsGetter.getNotes().addNote(noteTitle.getText().toString(), noteText.getText().toString(), noteDate.getText().toString());
                     currentIndexOfNote = SingleObjectsGetter.getNotes().getAllNotesTitles().size() - 1;
-                    SingleObjectsGetter.getBus().post(new EventUpdateNoteTitles(currentIndexOfNote));
+                    SingleObjectsGetter.getBus().post(new EventChangeNote(currentIndexOfNote, ChangeNoteTypes.INSERT));
                     Log.d("currentIndexOfNote", "currentIndexOfNote in NoteDetailFragment: " + currentIndexOfNote);
                 }
             }
@@ -169,7 +170,7 @@ public class NoteDetailFragment extends Fragment {
                 FragmentManager fragmentManager = requireActivity().getSupportFragmentManager();
                 fragmentManager.beginTransaction().remove(this).commit();
             }
-            SingleObjectsGetter.getBus().post(new EventUpdateNoteTitles(-1));
+            SingleObjectsGetter.getBus().post(new EventChangeNote(-1, ChangeNoteTypes.DELETE));
         } else {
             Toast.makeText(getContext(), "Nothing to delete...", Toast.LENGTH_SHORT).show();
         }

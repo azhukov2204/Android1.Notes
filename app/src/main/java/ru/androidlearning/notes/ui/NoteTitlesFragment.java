@@ -11,10 +11,14 @@ import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
+import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.os.Handler;
+import android.os.Looper;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -25,18 +29,22 @@ import android.widget.Toast;
 
 import com.squareup.otto.Subscribe;
 
+import java.util.Objects;
+
 import ru.androidlearning.notes.R;
 import ru.androidlearning.notes.data.SingleObjectsGetter;
-import ru.androidlearning.notes.types.EventUpdateNoteTitles;
+import ru.androidlearning.notes.data.EventChangeNote;
 
 
 public class NoteTitlesFragment extends Fragment {
 
     private int currentIndexOfNote = -1;
-    private int newIndexOfNote = -1;
-    private boolean needUpdateIndexOfNote = false;
+    private boolean needNotifyTitlesAdapter = false;
     private static final String BUNDLE_PARAM_KEY = "NoteIndex";
     private NoteTitlesAdapter noteTitlesAdapter;
+    private RecyclerView noteTitlesListRV = null;
+    private EventChangeNote eventChangeNote;
+    private static final int MY_DEFAULT_DURATION = 600;
 
     public static final String TITLES_LIST_BACKSTACK_NAME = "TitlesFragment";
 
@@ -51,9 +59,15 @@ public class NoteTitlesFragment extends Fragment {
                              Bundle savedInstanceState) {
         setHasOptionsMenu(true); //используем меню
         View view = inflater.inflate(R.layout.fragment_note_titles, container, false);
-        RecyclerView noteTitlesListRV = view.findViewById(R.id.noteTitlesLayout);
+        noteTitlesListRV = view.findViewById(R.id.noteTitlesLayout);
         initNoteTitlesListRV(noteTitlesListRV);
         initAddNewNoteButton(view);
+
+        DefaultItemAnimator animator = new DefaultItemAnimator();
+        animator.setAddDuration(MY_DEFAULT_DURATION);
+        animator.setRemoveDuration(MY_DEFAULT_DURATION);
+        noteTitlesListRV.setItemAnimator(animator);
+
         return view;
     }
 
@@ -64,6 +78,7 @@ public class NoteTitlesFragment extends Fragment {
         if (savedInstanceState != null) {
             currentIndexOfNote = savedInstanceState.getInt(BUNDLE_PARAM_KEY);
         } else {
+            Log.d("onResume", "savedInstanceState = null");
             currentIndexOfNote = -1;
         }
         if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
@@ -76,16 +91,23 @@ public class NoteTitlesFragment extends Fragment {
     @Override
     public void onSaveInstanceState(@NonNull Bundle outState) {
         outState.putInt(BUNDLE_PARAM_KEY, currentIndexOfNote);
+        Log.d("onResume", "saved InstanceState to Bundle: " + currentIndexOfNote);
         super.onSaveInstanceState(outState);
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        if (needUpdateIndexOfNote) {
-            needUpdateIndexOfNote = false;
-            currentIndexOfNote = newIndexOfNote;
+
+        if (needNotifyTitlesAdapter) {
+            needNotifyTitlesAdapter = false;
+            notifyNoteTitlesAdapter(eventChangeNote);
         }
+
+        if (currentIndexOfNote >= 0) {
+            new Handler(Looper.getMainLooper()).postDelayed(() -> noteTitlesListRV.smoothScrollToPosition(currentIndexOfNote), 100); //без этой задержки прокрутка может нормально не отработать при извлечении фрагмента из стека
+        }
+
     }
 
     @Override
@@ -137,9 +159,9 @@ public class NoteTitlesFragment extends Fragment {
         noteTitlesAdapter = new NoteTitlesAdapter(SingleObjectsGetter.getNotes(true));
         noteTitlesListRV.setAdapter(noteTitlesAdapter);
 
-        DividerItemDecoration itemDecoration = new DividerItemDecoration(getContext(), LinearLayoutManager.VERTICAL);
+        DividerItemDecoration itemDecoration = new DividerItemDecoration(Objects.requireNonNull(getContext()), LinearLayoutManager.VERTICAL);
 
-        itemDecoration.setDrawable(ContextCompat.getDrawable(getActivity(), R.drawable.note_cards_separator));
+        itemDecoration.setDrawable(Objects.requireNonNull(ContextCompat.getDrawable(Objects.requireNonNull(getActivity()), R.drawable.note_cards_separator)));
         noteTitlesListRV.addItemDecoration(itemDecoration);
 
         noteTitlesAdapter.setOnItemClickListener((view, position) -> {
@@ -175,20 +197,33 @@ public class NoteTitlesFragment extends Fragment {
     }
 
     @Subscribe
-    public void RecreateNoteTitlesList(EventUpdateNoteTitles e) {
-        needUpdateIndexOfNote = true;
-        newIndexOfNote = e.getNewIndexOfNote();
-
-        if (noteTitlesAdapter != null) {
-            noteTitlesAdapter.notifyDataSetChanged();
-        }
+    public void RecreateNoteTitlesList(EventChangeNote e) {
+        needNotifyTitlesAdapter = true;
+        eventChangeNote = e;
 
         if (getActivity() != null) {
             if (requireActivity().getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
-                needUpdateIndexOfNote = false;
-                currentIndexOfNote = newIndexOfNote;
+                notifyNoteTitlesAdapter(e);
+                needNotifyTitlesAdapter = false;
             }
         }
     }
 
+    private void notifyNoteTitlesAdapter(EventChangeNote e) {
+        switch (e.getChangeNoteType()) {
+            case DELETE:
+                noteTitlesAdapter.notifyItemRemoved(currentIndexOfNote);
+                break;
+            case INSERT:
+                noteTitlesAdapter.notifyItemInserted(e.getNewIndexOfNote());
+                break;
+            case UPDATE:
+                noteTitlesAdapter.notifyDataSetChanged();
+                break;
+        }
+        if (e.getNewIndexOfNote() >= 0) {
+            noteTitlesListRV.smoothScrollToPosition(e.getNewIndexOfNote());
+        }
+        currentIndexOfNote = e.getNewIndexOfNote();
+    }
 }
