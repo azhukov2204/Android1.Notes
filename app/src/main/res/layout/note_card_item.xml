@@ -1,12 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/noteCardView"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginTop="@dimen/defaultCardItemMargin"
-    android:layout_marginBottom="@dimen/defaultCardItemMargin"
     android:layout_marginStart="@dimen/defaultCardItemMargin"
-    android:layout_marginEnd="@dimen/defaultCardItemMargin">
+    android:layout_marginTop="@dimen/defaultCardItemMargin"
+    android:layout_marginEnd="@dimen/defaultCardItemMargin"
+    app:cardCornerRadius="@dimen/cardCornerRadiusSize">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -16,6 +17,8 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/defaultCardItemMargin"
+            android:layout_marginEnd="@dimen/defaultCardItemMargin"
             android:orientation="horizontal"
             android:weightSum="5">
 
@@ -42,6 +45,7 @@
             android:id="@+id/noteCardDetail"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/defaultCardItemMargin"
             android:textColor="@color/black"
             android:textSize="@dimen/noteCardDetailTextSize" />
 
