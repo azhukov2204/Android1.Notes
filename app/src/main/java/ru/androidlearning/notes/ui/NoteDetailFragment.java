@@ -9,7 +9,6 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -21,12 +20,15 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.squareup.otto.Subscribe;
+
 import java.util.Calendar;
 import java.util.Locale;
 import java.util.Objects;
 
 import ru.androidlearning.notes.R;
 import ru.androidlearning.notes.data.ChangeNoteTypes;
+import ru.androidlearning.notes.data.DeleteNoteInLandscapeEvent;
 import ru.androidlearning.notes.data.SingleObjectsGetter;
 import ru.androidlearning.notes.data.ChangeNoteEvent;
 
@@ -171,6 +173,13 @@ public class NoteDetailFragment extends Fragment {
             SingleObjectsGetter.getBus().post(new ChangeNoteEvent(-1, ChangeNoteTypes.DELETE));
         } else {
             Toast.makeText(getContext(), "Nothing to delete...", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    @Subscribe
+    public void deleteCurrentNoteFromBus(DeleteNoteInLandscapeEvent e) {
+        if (getActivity() != null) {
+            deleteCurrentNote();
         }
     }
 

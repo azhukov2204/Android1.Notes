@@ -32,6 +32,8 @@ import com.squareup.otto.Subscribe;
 import java.util.Objects;
 
 import ru.androidlearning.notes.R;
+import ru.androidlearning.notes.data.ChangeNoteTypes;
+import ru.androidlearning.notes.data.DeleteNoteInLandscapeEvent;
 import ru.androidlearning.notes.data.SingleObjectsGetter;
 import ru.androidlearning.notes.data.ChangeNoteEvent;
 
@@ -212,6 +214,7 @@ public class NoteTitlesFragment extends Fragment {
         switch (e.getChangeNoteType()) {
             case DELETE:
                 noteTitlesAdapter.notifyItemRemoved(currentIndexOfNote);
+                currentIndexOfNote = -1;
                 break;
             case INSERT:
                 noteTitlesAdapter.notifyItemInserted(e.getNewIndexOfNote());
@@ -230,14 +233,30 @@ public class NoteTitlesFragment extends Fragment {
     @Override
     public void onCreateContextMenu(@NonNull ContextMenu menu, @NonNull View v, @Nullable ContextMenu.ContextMenuInfo menuInfo) {
         super.onCreateContextMenu(menu, v, menuInfo);
-        MenuInflater inflater =requireActivity().getMenuInflater();
+        MenuInflater inflater = requireActivity().getMenuInflater();
         inflater.inflate(R.menu.note_titles_context_menu, menu);
     }
 
     @Override
     public boolean onContextItemSelected(@NonNull MenuItem item) {
-        int position = noteTitlesAdapter.getMenuPosition();
-        Toast.makeText(getContext(), " Position " + position, Toast.LENGTH_SHORT).show();
+        currentIndexOfNote = noteTitlesAdapter.getMenuPosition();
+
+        if (item.getItemId() == R.id.action_delete_context) {
+            if (isNoteDetailFragmentOpened()) {
+                SingleObjectsGetter.getBus().post(new DeleteNoteInLandscapeEvent());
+            } else {
+                SingleObjectsGetter.getNotes().deleteNoteByIndex(currentIndexOfNote);
+                notifyNoteTitlesAdapter(new ChangeNoteEvent(-1, ChangeNoteTypes.DELETE));
+            }
+        }
+
         return super.onContextItemSelected(item);
     }
+
+    private boolean isNoteDetailFragmentOpened() {
+        FragmentManager fragmentManager = requireActivity().getSupportFragmentManager();
+        Fragment noteDetailFragment = fragmentManager.findFragmentById(R.id.noteDetailFragmentContainer);
+        return (noteDetailFragment != null);
+    }
+
 }
