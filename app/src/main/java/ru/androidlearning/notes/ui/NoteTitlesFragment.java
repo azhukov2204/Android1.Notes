@@ -33,7 +33,7 @@ import java.util.Objects;
 
 import ru.androidlearning.notes.R;
 import ru.androidlearning.notes.data.SingleObjectsGetter;
-import ru.androidlearning.notes.data.EventChangeNote;
+import ru.androidlearning.notes.data.ChangeNoteEvent;
 
 
 public class NoteTitlesFragment extends Fragment {
@@ -43,7 +43,7 @@ public class NoteTitlesFragment extends Fragment {
     private static final String BUNDLE_PARAM_KEY = "NoteIndex";
     private NoteTitlesAdapter noteTitlesAdapter;
     private RecyclerView noteTitlesListRV = null;
-    private EventChangeNote eventChangeNote;
+    private ChangeNoteEvent changeNoteEvent;
     private static final int MY_DEFAULT_DURATION = 600;
 
     public static final String TITLES_LIST_BACKSTACK_NAME = "TitlesFragment";
@@ -78,7 +78,6 @@ public class NoteTitlesFragment extends Fragment {
         if (savedInstanceState != null) {
             currentIndexOfNote = savedInstanceState.getInt(BUNDLE_PARAM_KEY);
         } else {
-            Log.d("onResume", "savedInstanceState = null");
             currentIndexOfNote = -1;
         }
         if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
@@ -91,7 +90,6 @@ public class NoteTitlesFragment extends Fragment {
     @Override
     public void onSaveInstanceState(@NonNull Bundle outState) {
         outState.putInt(BUNDLE_PARAM_KEY, currentIndexOfNote);
-        Log.d("onResume", "saved InstanceState to Bundle: " + currentIndexOfNote);
         super.onSaveInstanceState(outState);
     }
 
@@ -101,11 +99,12 @@ public class NoteTitlesFragment extends Fragment {
 
         if (needNotifyTitlesAdapter) {
             needNotifyTitlesAdapter = false;
-            notifyNoteTitlesAdapter(eventChangeNote);
+            notifyNoteTitlesAdapter(changeNoteEvent);
         }
 
         if (currentIndexOfNote >= 0) {
-            new Handler(Looper.getMainLooper()).postDelayed(() -> noteTitlesListRV.smoothScrollToPosition(currentIndexOfNote), 100); //без этой задержки прокрутка может нормально не отработать при извлечении фрагмента из стека
+            //без этой задержки прокрутка может нормально не отработать при извлечении фрагмента из стека:
+            new Handler(Looper.getMainLooper()).postDelayed(() -> noteTitlesListRV.smoothScrollToPosition(currentIndexOfNote), 100);
         }
 
     }
@@ -197,9 +196,9 @@ public class NoteTitlesFragment extends Fragment {
     }
 
     @Subscribe
-    public void RecreateNoteTitlesList(EventChangeNote e) {
+    public void RecreateNoteTitlesList(ChangeNoteEvent e) {
         needNotifyTitlesAdapter = true;
-        eventChangeNote = e;
+        changeNoteEvent = e;
 
         if (getActivity() != null) {
             if (requireActivity().getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
@@ -209,7 +208,7 @@ public class NoteTitlesFragment extends Fragment {
         }
     }
 
-    private void notifyNoteTitlesAdapter(EventChangeNote e) {
+    private void notifyNoteTitlesAdapter(ChangeNoteEvent e) {
         switch (e.getChangeNoteType()) {
             case DELETE:
                 noteTitlesAdapter.notifyItemRemoved(currentIndexOfNote);
