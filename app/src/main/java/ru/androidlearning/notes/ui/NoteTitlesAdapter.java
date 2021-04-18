@@ -6,6 +6,8 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.cardview.widget.CardView;
+import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.RecyclerView;
 
 import ru.androidlearning.notes.R;
@@ -15,9 +17,12 @@ public class NoteTitlesAdapter extends RecyclerView.Adapter<NoteTitlesAdapter.Vi
 
     private final Notes notes;
     private OnItemClickListener onItemClickListener;
+    private final Fragment fragment;
+    private int menuPosition;
 
-    public NoteTitlesAdapter(Notes notes) {
+    public NoteTitlesAdapter(Notes notes, Fragment fragment) {
         this.notes = notes;
+        this.fragment = fragment;
     }
 
     @NonNull
@@ -32,7 +37,6 @@ public class NoteTitlesAdapter extends RecyclerView.Adapter<NoteTitlesAdapter.Vi
         holder.setData(notes.getNoteEntryByIndex(position));
     }
 
-
     @Override
     public int getItemCount() {
         return notes.getAllNotesTitles().size();
@@ -46,6 +50,10 @@ public class NoteTitlesAdapter extends RecyclerView.Adapter<NoteTitlesAdapter.Vi
         void onItemClick(View view, int position);
     }
 
+    public int getMenuPosition() {
+        return menuPosition;
+    }
+
     public class ViewHolder extends RecyclerView.ViewHolder {
         TextView noteTitle;
         TextView noteDate;
@@ -57,12 +65,29 @@ public class NoteTitlesAdapter extends RecyclerView.Adapter<NoteTitlesAdapter.Vi
             noteDate = itemView.findViewById(R.id.noteCardDate);
             noteDetails = itemView.findViewById(R.id.noteCardDetail);
 
-            itemView.findViewById(R.id.noteCardView).setOnClickListener(v -> {
+            registerContextMenu(itemView);
+
+            itemView.setOnClickListener(v -> {
                 if (onItemClickListener != null) {
                     onItemClickListener.onItemClick(v, getAdapterPosition());
                 }
             });
 
+            /*itemView.setOnLongClickListener(v -> {
+                menuPosition = getLayoutPosition();
+                return false;
+            });*/
+
+        }
+
+        private void registerContextMenu(@NonNull View itemView) {
+            if (fragment != null) {
+                itemView.setOnLongClickListener(v -> {
+                    menuPosition = getLayoutPosition();
+                    return false;
+                });
+                fragment.registerForContextMenu(itemView);
+            }
         }
 
         public void setData(Notes.NoteEntry noteEntry) {
@@ -70,6 +95,8 @@ public class NoteTitlesAdapter extends RecyclerView.Adapter<NoteTitlesAdapter.Vi
             noteDate.setText(noteEntry.getNoteCreatedDate());
             noteDetails.setText(noteEntry.getNoteText());
         }
+
+
     }
 
 }

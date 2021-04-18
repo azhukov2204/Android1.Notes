@@ -18,7 +18,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.os.Handler;
 import android.os.Looper;
-import android.util.Log;
+import android.view.ContextMenu;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -155,7 +155,7 @@ public class NoteTitlesFragment extends Fragment {
         //noteTitlesListRV.setHasFixedSize(true);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
         noteTitlesListRV.setLayoutManager(linearLayoutManager);
-        noteTitlesAdapter = new NoteTitlesAdapter(SingleObjectsGetter.getNotes(true));
+        noteTitlesAdapter = new NoteTitlesAdapter(SingleObjectsGetter.getNotes(true), this);
         noteTitlesListRV.setAdapter(noteTitlesAdapter);
 
         DividerItemDecoration itemDecoration = new DividerItemDecoration(Objects.requireNonNull(getContext()), LinearLayoutManager.VERTICAL);
@@ -224,5 +224,20 @@ public class NoteTitlesFragment extends Fragment {
             noteTitlesListRV.smoothScrollToPosition(e.getNewIndexOfNote());
         }
         currentIndexOfNote = e.getNewIndexOfNote();
+    }
+
+
+    @Override
+    public void onCreateContextMenu(@NonNull ContextMenu menu, @NonNull View v, @Nullable ContextMenu.ContextMenuInfo menuInfo) {
+        super.onCreateContextMenu(menu, v, menuInfo);
+        MenuInflater inflater =requireActivity().getMenuInflater();
+        inflater.inflate(R.menu.note_titles_context_menu, menu);
+    }
+
+    @Override
+    public boolean onContextItemSelected(@NonNull MenuItem item) {
+        int position = noteTitlesAdapter.getMenuPosition();
+        Toast.makeText(getContext(), " Position " + position, Toast.LENGTH_SHORT).show();
+        return super.onContextItemSelected(item);
     }
 }
