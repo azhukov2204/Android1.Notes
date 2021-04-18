@@ -1,8 +1,7 @@
-package ru.androidlearning.notes.models;
+package ru.androidlearning.notes.data;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.List;
 
 import ru.androidlearning.notes.types.NoteEntry;
@@ -52,6 +51,10 @@ public class Notes {
 
     public String getNoteFormattedCreatedDateAsStringByIndex(int index) {
         return notesList.get(index).getNoteCreatedDate();
+    }
+
+    public NoteEntry getNoteEntryByIndex(int index) {
+        return notesList.get(index);
     }
 
     public List<String> getAllNotesTitles() {

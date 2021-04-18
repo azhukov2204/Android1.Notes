@@ -1,4 +1,4 @@
-package ru.androidlearning.notes;
+package ru.androidlearning.notes.ui;
 
 import android.annotation.SuppressLint;
 import android.app.DatePickerDialog;
@@ -25,7 +25,8 @@ import java.util.Calendar;
 import java.util.Locale;
 import java.util.Objects;
 
-import ru.androidlearning.notes.models.SingleObjectsGetter;
+import ru.androidlearning.notes.R;
+import ru.androidlearning.notes.data.SingleObjectsGetter;
 import ru.androidlearning.notes.types.EventUpdateNoteTitles;
 
 public class NoteDetailFragment extends Fragment {

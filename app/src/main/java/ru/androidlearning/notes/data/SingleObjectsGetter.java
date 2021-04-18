@@ -1,4 +1,4 @@
-package ru.androidlearning.notes.models;
+package ru.androidlearning.notes.data;
 import com.squareup.otto.Bus;
 
 public class SingleObjectsGetter {

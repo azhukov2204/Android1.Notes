@@ -19,6 +19,10 @@ import android.widget.LinearLayout;
 
 import com.google.android.material.navigation.NavigationView;
 
+import ru.androidlearning.notes.ui.AboutFragment;
+import ru.androidlearning.notes.ui.NoteTitlesFragment;
+import ru.androidlearning.notes.ui.SettingsFragment;
+
 public class MainActivity extends AppCompatActivity {
 
     private final static String IS_HIDDEN_NOTE_DETAIL_CONTAINER_BUNDLE_KEY = "isHiddenNoteDetailContainer";
@@ -126,31 +130,26 @@ public class MainActivity extends AppCompatActivity {
         clearBackStack();
         hideNoteDetailFragmentContainerInLandscape();
         Fragment settingsFragment = new SettingsFragment();
-
-        getSupportFragmentManager().beginTransaction()
-                .replace(R.id.notesUniversalFragmentContainer, settingsFragment)
-                .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
-                .commit();
+        runFragment(settingsFragment);
     }
 
     private void openAboutFragment() {
         clearBackStack();
         hideNoteDetailFragmentContainerInLandscape();
-        Fragment settingsFragment = new AboutFragment();
-
-        getSupportFragmentManager().beginTransaction()
-                .replace(R.id.notesUniversalFragmentContainer, settingsFragment)
-                .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
-                .commit();
+        Fragment aboutFragment = new AboutFragment();
+        runFragment(aboutFragment);
     }
 
     private void openNotesFragment() {
         showNoteDetailFragmentContainerInLandscape();
         NoteTitlesFragment noteTitlesFragment = new NoteTitlesFragment();
+        runFragment(noteTitlesFragment);
+    }
 
+    private void runFragment(Fragment fragment) {
         getSupportFragmentManager().beginTransaction()
-                .replace(R.id.notesUniversalFragmentContainer, noteTitlesFragment)
-                .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
+                .replace(R.id.notesUniversalFragmentContainer, fragment)
+                .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
                 .commit();
     }
 
@@ -182,7 +181,6 @@ public class MainActivity extends AppCompatActivity {
             fragmentManager.popBackStack(entry.getId(), FragmentManager.POP_BACK_STACK_INCLUSIVE);
         }
     }
-
 
 }
 

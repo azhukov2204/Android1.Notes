@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/noteCardView"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="@dimen/defaultCardItemMargin"
+    android:layout_marginBottom="@dimen/defaultCardItemMargin"
+    android:layout_marginStart="@dimen/defaultCardItemMargin"
+    android:layout_marginEnd="@dimen/defaultCardItemMargin">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:weightSum="5">
+
+            <TextView
+                android:id="@+id/noteCardTitle"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="3"
+                android:textColor="@color/black"
+                android:textSize="@dimen/noteCardTitleTextSize"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/noteCardDate"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="2"
+                android:gravity="end"
+                android:textColor="@color/black"
+                android:textSize="@dimen/noteCardDateTextSize" />
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/noteCardDetail"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColor="@color/black"
+            android:textSize="@dimen/noteCardDetailTextSize" />
+
+    </LinearLayout>
+
+</androidx.cardview.widget.CardView>
