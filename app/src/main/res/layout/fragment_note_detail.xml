@@ -7,14 +7,14 @@
     android:background="@color/white"
     tools:context=".ui.NoteDetailFragment">
 
-
     <TextView
         android:id="@+id/noteDate"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginEnd="@dimen/noteDetailFragmentDefaultMargin"
-        android:gravity="start"
+        android:gravity="end"
         android:text=""
+        android:textColor="@color/black"
         android:textSize="@dimen/noteDetailFragmentDateTextSize" />
 
     <EditText
