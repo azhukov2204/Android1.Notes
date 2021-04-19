@@ -1,6 +1,7 @@
 package ru.androidlearning.notes.ui;
 
 import android.annotation.SuppressLint;
+import android.content.Context;
 import android.content.res.Configuration;
 import android.os.Bundle;
 
@@ -32,6 +33,7 @@ import com.squareup.otto.Subscribe;
 
 import java.util.Objects;
 
+import ru.androidlearning.notes.MainActivity;
 import ru.androidlearning.notes.R;
 import ru.androidlearning.notes.data.ChangeNoteTypes;
 import ru.androidlearning.notes.data.DeleteNoteInLandscapeEvent;
@@ -48,10 +50,17 @@ public class NoteTitlesFragment extends Fragment {
     private RecyclerView noteTitlesListRV = null;
     private ChangeNoteEvent changeNoteEvent;
     private static final int MY_DEFAULT_DURATION = 600;
+    private MainActivity mainActivity;
 
     private FloatingActionButton addNewNoteFAB;
 
     public static final String TITLES_LIST_BACKSTACK_NAME = "TitlesFragment";
+
+    @Override
+    public void onAttach(@NonNull Context context) {
+        super.onAttach(context);
+        mainActivity = (MainActivity) context;
+    }
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -109,6 +118,8 @@ public class NoteTitlesFragment extends Fragment {
         super.onResume();
         addNewNoteFAB.show();
 
+        changeHomeButtonToBurgerButtonOnToolbar();
+
         if (needNotifyTitlesAdapter) {
             needNotifyTitlesAdapter = false;
             notifyNoteTitlesAdapter(changeNoteEvent);
@@ -118,7 +129,12 @@ public class NoteTitlesFragment extends Fragment {
             //без этой задержки прокрутка может нормально не отработать при извлечении фрагмента из стека:
             new Handler(Looper.getMainLooper()).postDelayed(() -> noteTitlesListRV.smoothScrollToPosition(currentIndexOfNote), 100);
         }
+    }
 
+    private void changeHomeButtonToBurgerButtonOnToolbar() {
+        if (mainActivity != null) {
+            mainActivity.showBurgerButtonOnToolbar();
+        }
     }
 
     @Override
@@ -205,12 +221,19 @@ public class NoteTitlesFragment extends Fragment {
             addNewNoteFAB.hide();
             fragmentTransaction.addToBackStack(NoteTitlesFragment.TITLES_LIST_BACKSTACK_NAME);
             fragmentTransaction.replace(R.id.notesUniversalFragmentContainer, noteDetailFragment);
+            changeBurgerButtonToHomeButtonOnToolbar();
         }
         fragmentTransaction.commit();
     }
 
+    private void changeBurgerButtonToHomeButtonOnToolbar() {
+        if (mainActivity != null) {
+            mainActivity.showHomeButtonOnToolbar();
+        }
+    }
+
     @Subscribe
-    public void RecreateNoteTitlesList(ChangeNoteEvent e) {
+    public void RefreshNoteTitlesListFromBus(ChangeNoteEvent e) {
         needNotifyTitlesAdapter = true;
         changeNoteEvent = e;
 
