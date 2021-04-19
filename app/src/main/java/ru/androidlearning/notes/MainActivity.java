@@ -17,6 +17,7 @@ import android.util.Log;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
 
 import ru.androidlearning.notes.ui.AboutFragment;
@@ -27,16 +28,17 @@ public class MainActivity extends AppCompatActivity {
 
     private final static String IS_HIDDEN_NOTE_DETAIL_CONTAINER_BUNDLE_KEY = "isHiddenNoteDetailContainer";
     private static boolean isHiddenNoteDetailContainer = false;
+    FloatingActionButton addNewNoteFAB;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        initViews();
         checkInstanceStateAndHideOrShowNoteDetailFragmentContainer(savedInstanceState);
         openNoteTitlesFragmentAtFirstRun(savedInstanceState);
         removeUnnecessaryNoteDetailFragment(); //при смене ориентации на портретную надо удалить фрагмент из noteDetailFragmentContainer, иначе в ToolBar останется его меню
-        initView();
     }
 
     @Override
@@ -78,7 +80,8 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private void initView() {
+    private void initViews() {
+        addNewNoteFAB = findViewById(R.id.add_new_note_fab);
         Toolbar toolbar = initToolbar();
         initDrawer(toolbar);
     }
@@ -127,6 +130,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void openSettingsFragment() {
+        addNewNoteFAB.hide();
         clearBackStack();
         hideNoteDetailFragmentContainerInLandscape();
         Fragment settingsFragment = new SettingsFragment();
@@ -134,6 +138,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void openAboutFragment() {
+        addNewNoteFAB.hide();
         clearBackStack();
         hideNoteDetailFragmentContainerInLandscape();
         Fragment aboutFragment = new AboutFragment();
@@ -141,6 +146,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void openNotesFragment() {
+        addNewNoteFAB.show();
         showNoteDetailFragmentContainerInLandscape();
         NoteTitlesFragment noteTitlesFragment = new NoteTitlesFragment();
         runFragment(noteTitlesFragment);
