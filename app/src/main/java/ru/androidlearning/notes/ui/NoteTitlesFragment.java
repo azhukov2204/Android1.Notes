@@ -183,7 +183,6 @@ public class NoteTitlesFragment extends Fragment {
     }
 
     private void initAddNewNoteButtons(View view) {
-        view.findViewById(R.id.createNewNoteButton).setOnClickListener(v -> openNoteDetailFragment(true));
         addNewNoteFAB = requireActivity().findViewById(R.id.add_new_note_fab);
         addNewNoteFAB.setOnClickListener(v -> openNoteDetailFragment(true));
     }
