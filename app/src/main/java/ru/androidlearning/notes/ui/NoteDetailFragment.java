@@ -9,6 +9,8 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -118,7 +120,27 @@ public class NoteDetailFragment extends Fragment {
         }
 
         noteEditTextFragment.findViewById(R.id.saveAndCloseButton).setOnClickListener(v -> saveAndCloseButtonAction());
+        addTListenerForSaveNoteChanges(noteDate);
+        addTListenerForSaveNoteChanges(noteText);
+        addTListenerForSaveNoteChanges(noteTitle);
         noteDate.setOnClickListener(v -> setDateFromDatePicker(noteDate));
+    }
+
+    private void addTListenerForSaveNoteChanges(TextView textView) {
+        textView.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                saveNoteChanges();
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+            }
+        });
     }
 
     private void saveAndCloseButtonAction() {
@@ -148,9 +170,12 @@ public class NoteDetailFragment extends Fragment {
             if (currentIndexOfNote >= 0) {
                 //Редактирование существующей заметки
                 String oldTitle = SingleObjectsGetter.getNotes().getNoteTitleByIndex(currentIndexOfNote);
+                String oldText = SingleObjectsGetter.getNotes().getNoteTextByIndex(currentIndexOfNote);
+                String oldDate = SingleObjectsGetter.getNotes().getNoteFormattedCreatedDateAsStringByIndex(currentIndexOfNote);
+
                 SingleObjectsGetter.getNotes().updateNoteByIndex(currentIndexOfNote, noteTitle.getText().toString(), noteText.getText().toString(), noteDate.getText().toString());
 
-                if (!oldTitle.equals(noteTitle.getText().toString())) { //если заголовок изменился - тоже делаем обновление списка
+                if (!oldTitle.equals(noteTitle.getText().toString()) || !oldText.equals(noteText.getText().toString()) || !oldDate.equals(noteDate.getText().toString())) { //если есть изменения
                     SingleObjectsGetter.getBus().post(new ChangeNoteEvent(currentIndexOfNote, ChangeNoteTypes.UPDATE));
                 }
             } else {
