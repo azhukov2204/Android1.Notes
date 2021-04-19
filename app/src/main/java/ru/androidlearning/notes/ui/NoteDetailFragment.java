@@ -119,7 +119,6 @@ public class NoteDetailFragment extends Fragment {
             noteDate.setText(String.format(Locale.US, "%02d.%02d.%04d", calendar.get(Calendar.DAY_OF_MONTH), calendar.get(Calendar.MONTH) + 1, calendar.get(Calendar.YEAR)));
         }
 
-        noteEditTextFragment.findViewById(R.id.saveAndCloseButton).setOnClickListener(v -> saveAndCloseButtonAction());
         addTListenerForSaveNoteChanges(noteDate);
         addTListenerForSaveNoteChanges(noteText);
         addTListenerForSaveNoteChanges(noteTitle);

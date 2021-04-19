@@ -18,4 +18,5 @@
     <dimen name="noteCardDetailTextSize">20sp</dimen>
     <dimen name="noteCardTitleTextSize">20sp</dimen>
     <dimen name="cardCornerRadiusSize">5dp</dimen>
+    <dimen name="FAB_margin">16dp</dimen>
 </resources>
