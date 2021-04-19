@@ -27,6 +27,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.squareup.otto.Subscribe;
 
 import java.util.Objects;
@@ -48,6 +49,8 @@ public class NoteTitlesFragment extends Fragment {
     private ChangeNoteEvent changeNoteEvent;
     private static final int MY_DEFAULT_DURATION = 600;
 
+    private FloatingActionButton addNewNoteFAB;
+
     public static final String TITLES_LIST_BACKSTACK_NAME = "TitlesFragment";
 
     @Override
@@ -57,13 +60,19 @@ public class NoteTitlesFragment extends Fragment {
     }
 
     @Override
+    public void onDestroy() {
+        super.onDestroy();
+        SingleObjectsGetter.getBus().unregister(this);
+    }
+
+    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         setHasOptionsMenu(true); //используем меню
         View view = inflater.inflate(R.layout.fragment_note_titles, container, false);
         noteTitlesListRV = view.findViewById(R.id.noteTitlesLayout);
         initNoteTitlesListRV(noteTitlesListRV);
-        initAddNewNoteButton(view);
+        initAddNewNoteButtons(view);
 
         DefaultItemAnimator animator = new DefaultItemAnimator();
         animator.setAddDuration(MY_DEFAULT_DURATION);
@@ -98,6 +107,7 @@ public class NoteTitlesFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
+        addNewNoteFAB.show();
 
         if (needNotifyTitlesAdapter) {
             needNotifyTitlesAdapter = false;
@@ -172,8 +182,10 @@ public class NoteTitlesFragment extends Fragment {
 
     }
 
-    private void initAddNewNoteButton(View view) {
+    private void initAddNewNoteButtons(View view) {
         view.findViewById(R.id.createNewNoteButton).setOnClickListener(v -> openNoteDetailFragment(true));
+        addNewNoteFAB = requireActivity().findViewById(R.id.add_new_note_fab);
+        addNewNoteFAB.setOnClickListener(v -> openNoteDetailFragment(true));
     }
 
     private void openNoteDetailFragment(boolean isNewNote) {
@@ -191,6 +203,7 @@ public class NoteTitlesFragment extends Fragment {
         if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
             fragmentTransaction.replace(R.id.noteDetailFragmentContainer, noteDetailFragment);
         } else {
+            addNewNoteFAB.hide();
             fragmentTransaction.addToBackStack(NoteTitlesFragment.TITLES_LIST_BACKSTACK_NAME);
             fragmentTransaction.replace(R.id.notesUniversalFragmentContainer, noteDetailFragment);
         }

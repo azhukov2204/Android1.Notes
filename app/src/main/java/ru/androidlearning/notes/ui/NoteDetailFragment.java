@@ -56,6 +56,12 @@ public class NoteDetailFragment extends Fragment {
     }
 
     @Override
+    public void onDestroy() {
+        super.onDestroy();
+        SingleObjectsGetter.getBus().unregister(this);
+    }
+
+    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View noteEditTextFragment = inflater.inflate(R.layout.fragment_note_detail, container, false);
