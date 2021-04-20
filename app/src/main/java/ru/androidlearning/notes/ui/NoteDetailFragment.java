@@ -93,6 +93,13 @@ public class NoteDetailFragment extends Fragment {
         return super.onOptionsItemSelected(item);
     }
 
+    private void saveCurrentInstanceState() {
+        if (getArguments() != null) {
+            getArguments().putInt(BUNDLE_PARAM_KEY, currentIndexOfNote);
+        }
+    }
+
+
     @Override
     public void onPause() {
         if (!isDeleting) {
@@ -142,13 +149,6 @@ public class NoteDetailFragment extends Fragment {
         });
     }
 
-    private void saveAndCloseButtonAction() {
-        saveNoteChanges();
-        if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
-            Objects.requireNonNull(getActivity()).onBackPressed();
-        }
-    }
-
     private void setDateFromDatePicker(TextView noteDate) {
         final Calendar c = Calendar.getInstance();
         int mYear = c.get(Calendar.YEAR);
@@ -185,6 +185,7 @@ public class NoteDetailFragment extends Fragment {
                     SingleObjectsGetter.getNotes().addNote(noteTitle.getText().toString(), noteText.getText().toString(), noteDate.getText().toString());
                     currentIndexOfNote = SingleObjectsGetter.getNotes().getAllNotesTitles().size() - 1;
                     SingleObjectsGetter.getBus().post(new ChangeNoteEvent(currentIndexOfNote, ChangeNoteTypes.INSERT));
+                    saveCurrentInstanceState();
                 }
             }
         }

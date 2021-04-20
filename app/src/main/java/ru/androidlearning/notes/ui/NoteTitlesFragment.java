@@ -19,6 +19,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.os.Handler;
 import android.os.Looper;
+import android.util.Log;
 import android.view.ContextMenu;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -55,6 +56,12 @@ public class NoteTitlesFragment extends Fragment {
     private FloatingActionButton addNewNoteFAB;
 
     public static final String TITLES_LIST_BACKSTACK_NAME = "TitlesFragment";
+
+    public NoteTitlesFragment() {
+        Bundle args = new Bundle();
+        args.putInt(BUNDLE_PARAM_KEY, currentIndexOfNote);
+        setArguments(args);
+    }
 
     @Override
     public void onAttach(@NonNull Context context) {
@@ -95,8 +102,8 @@ public class NoteTitlesFragment extends Fragment {
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        if (savedInstanceState != null) {
-            currentIndexOfNote = savedInstanceState.getInt(BUNDLE_PARAM_KEY);
+        if (getArguments() != null) {
+            currentIndexOfNote = getArguments().getInt(BUNDLE_PARAM_KEY);
         } else {
             currentIndexOfNote = -1;
         }
@@ -109,8 +116,14 @@ public class NoteTitlesFragment extends Fragment {
 
     @Override
     public void onSaveInstanceState(@NonNull Bundle outState) {
-        outState.putInt(BUNDLE_PARAM_KEY, currentIndexOfNote);
+        saveCurrentInstanceState();
         super.onSaveInstanceState(outState);
+    }
+
+    private void saveCurrentInstanceState() {
+        if (getArguments() != null) {
+            getArguments().putInt(BUNDLE_PARAM_KEY, currentIndexOfNote);
+        }
     }
 
     @Override
@@ -126,8 +139,7 @@ public class NoteTitlesFragment extends Fragment {
         }
 
         if (currentIndexOfNote >= 0) {
-            //без этой задержки прокрутка может нормально не отработать при извлечении фрагмента из стека:
-            new Handler(Looper.getMainLooper()).postDelayed(() -> noteTitlesListRV.smoothScrollToPosition(currentIndexOfNote), 100);
+            noteTitlesListRV.smoothScrollToPosition(currentIndexOfNote);
         }
     }
 
@@ -211,6 +223,8 @@ public class NoteTitlesFragment extends Fragment {
             noteDetailFragment = NoteDetailFragment.newInstance(currentIndexOfNote);
         }
 
+        saveCurrentInstanceState();
+
         FragmentManager fragmentManager = requireActivity().getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
         fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_NONE);
@@ -243,6 +257,8 @@ public class NoteTitlesFragment extends Fragment {
                 needNotifyTitlesAdapter = false;
             }
         }
+        currentIndexOfNote = e.getNewIndexOfNote();
+        saveCurrentInstanceState();
     }
 
     private void notifyNoteTitlesAdapter(ChangeNoteEvent e) {
@@ -259,9 +275,8 @@ public class NoteTitlesFragment extends Fragment {
                 break;
         }
         if (e.getNewIndexOfNote() >= 0) {
-            noteTitlesListRV.smoothScrollToPosition(e.getNewIndexOfNote());
+            new Handler(Looper.getMainLooper()).postDelayed(() -> noteTitlesListRV.smoothScrollToPosition(currentIndexOfNote), 100);
         }
-        currentIndexOfNote = e.getNewIndexOfNote();
     }
 
 
