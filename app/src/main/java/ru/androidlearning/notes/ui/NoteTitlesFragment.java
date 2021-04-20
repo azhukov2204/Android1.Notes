@@ -247,7 +247,7 @@ public class NoteTitlesFragment extends Fragment {
     }
 
     @Subscribe
-    public void refreshNoteTitlesListFromBus(ChangeNoteEvent e) {
+    public void refreshNoteTitlesListViaBus(ChangeNoteEvent e) {
         needNotifyTitlesAdapter = true;
         changeNoteEvent = e;
 

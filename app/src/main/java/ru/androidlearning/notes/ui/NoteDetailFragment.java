@@ -208,7 +208,7 @@ public class NoteDetailFragment extends Fragment {
     }
 
     @Subscribe
-    public void deleteCurrentNoteFromBus(DeleteNoteInLandscapeEvent e) {
+    public void deleteCurrentNoteViaBus(DeleteNoteInLandscapeEvent e) {
         if (getActivity() != null) {
             deleteCurrentNote();
         }
