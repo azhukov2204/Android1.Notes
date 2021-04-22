@@ -3,6 +3,7 @@ package ru.androidlearning.notes.common;
 import com.squareup.otto.Bus;
 
 import ru.androidlearning.notes.data.Notes;
+import ru.androidlearning.notes.data.NotesFirebaseImpl;
 import ru.androidlearning.notes.data.NotesImpl;
 
 public class SingleObjectsGetter {
@@ -12,8 +13,8 @@ public class SingleObjectsGetter {
 
     public static Notes getNotes() {
         if (notes == null) {
-            notes = new NotesImpl();
-            notes.initNotes(TEST_MODE);
+            notes = new NotesFirebaseImpl();
+            //notes.initNotes();
         }
         return notes;
     }

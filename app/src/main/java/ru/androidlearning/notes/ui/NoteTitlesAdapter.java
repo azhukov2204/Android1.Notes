@@ -16,14 +16,17 @@ import ru.androidlearning.notes.data.Notes;
 
 public class NoteTitlesAdapter extends RecyclerView.Adapter<NoteTitlesAdapter.ViewHolder> {
 
-    private final Notes notes;
+    private Notes notes;
     private OnItemClickListener onItemClickListener;
     private final Fragment fragment;
     private int menuPosition;
 
-    public NoteTitlesAdapter(Notes notes, Fragment fragment) {
-        this.notes = notes;
+    public NoteTitlesAdapter(Fragment fragment) {
         this.fragment = fragment;
+    }
+
+    public void setNotes(Notes notes) {
+        this.notes = notes;
     }
 
     @NonNull

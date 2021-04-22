@@ -5,9 +5,9 @@ import java.util.Map;
 
 public class NotesDataMapping {
     public static class Fields {
-        public final static String NOTE_TITLE = "title";
-        public final static String NOTE_TEXT = "text";
-        public final static String NOTE_CREATED_DATE = "date";
+        public final static String NOTE_TITLE = "noteTitle";
+        public final static String NOTE_TEXT = "noteText";
+        public final static String NOTE_CREATED_DATE = "noteCreatedDate";
     }
 
     public static NoteEntry toNoteEntry(String id, Map<String, Object> doc) {

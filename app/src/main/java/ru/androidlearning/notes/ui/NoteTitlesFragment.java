@@ -39,6 +39,8 @@ import ru.androidlearning.notes.bus_events.ChangeNoteTypes;
 import ru.androidlearning.notes.bus_events.DeleteNoteInLandscapeEvent;
 import ru.androidlearning.notes.common.SingleObjectsGetter;
 import ru.androidlearning.notes.bus_events.ChangeNoteEvent;
+import ru.androidlearning.notes.data.Notes;
+import ru.androidlearning.notes.data.NotesResponse;
 
 
 public class NoteTitlesFragment extends Fragment {
@@ -194,8 +196,10 @@ public class NoteTitlesFragment extends Fragment {
         //noteTitlesListRV.setHasFixedSize(true);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
         noteTitlesListRV.setLayoutManager(linearLayoutManager);
-        noteTitlesAdapter = new NoteTitlesAdapter(SingleObjectsGetter.getNotes(), this);
+        noteTitlesAdapter = new NoteTitlesAdapter(this);
         noteTitlesListRV.setAdapter(noteTitlesAdapter);
+        SingleObjectsGetter.getNotes().initNotes(notes -> noteTitlesAdapter.notifyDataSetChanged()); //При инициализации происходит считывание данных из Firestore
+        noteTitlesAdapter.setNotes(SingleObjectsGetter.getNotes());
 
         DividerItemDecoration itemDecoration = new DividerItemDecoration(Objects.requireNonNull(getContext()), LinearLayoutManager.VERTICAL);
 

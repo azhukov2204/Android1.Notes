@@ -11,6 +11,7 @@ import androidx.fragment.app.FragmentManager;
 
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -39,6 +40,7 @@ public class NoteDetailFragment extends Fragment {
     private int currentIndexOfNote;
     private static final String BUNDLE_PARAM_KEY = "NoteIndex";
     private boolean isDeleting = false;
+    private static final String LOG_TAG = "[NoteDetailFragment]";
 
     public static NoteDetailFragment newInstance(int indexOfNote) {
         NoteDetailFragment fragment = new NoteDetailFragment();
@@ -173,6 +175,7 @@ public class NoteDetailFragment extends Fragment {
                 String oldDate = SingleObjectsGetter.getNotes().getNoteFormattedCreatedDateAsStringByIndex(currentIndexOfNote);
 
                 SingleObjectsGetter.getNotes().updateNoteByIndex(currentIndexOfNote, noteTitle.getText().toString(), noteText.getText().toString(), noteDate.getText().toString());
+                Log.d(LOG_TAG, "Editing of current note id " + currentIndexOfNote);
 
                 if (!oldTitle.equals(noteTitle.getText().toString()) || !oldText.equals(noteText.getText().toString()) || !oldDate.equals(noteDate.getText().toString())) { //если есть изменения
                     SingleObjectsGetter.getBus().post(new ChangeNoteEvent(currentIndexOfNote, ChangeNoteTypes.UPDATE));
@@ -184,6 +187,7 @@ public class NoteDetailFragment extends Fragment {
                 } else {
                     SingleObjectsGetter.getNotes().addNote(noteTitle.getText().toString(), noteText.getText().toString(), noteDate.getText().toString());
                     currentIndexOfNote = SingleObjectsGetter.getNotes().getAllNotesTitles().size() - 1;
+                    Log.d(LOG_TAG, "Saving a new note, currentIndexOfNote = " + currentIndexOfNote);
                     SingleObjectsGetter.getBus().post(new ChangeNoteEvent(currentIndexOfNote, ChangeNoteTypes.INSERT));
                     saveCurrentInstanceState();
                 }
