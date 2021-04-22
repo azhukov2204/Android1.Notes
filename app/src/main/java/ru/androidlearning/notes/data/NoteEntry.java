@@ -4,6 +4,7 @@ import java.util.Calendar;
 import java.util.Locale;
 
 public class NoteEntry {
+    private String FirebaseId; //идентификатор записи для сохранения в Firebase
     private String noteTitle;
     private String noteText;
     private String noteCreatedDate;
@@ -44,5 +45,13 @@ public class NoteEntry {
 
     public void setNoteCreatedDate(String noteCreatedDate) {
         this.noteCreatedDate = noteCreatedDate;
+    }
+
+    public String getFirebaseId() {
+        return FirebaseId;
+    }
+
+    public void setFirebaseId(String firebaseId) {
+        FirebaseId = firebaseId;
     }
 }

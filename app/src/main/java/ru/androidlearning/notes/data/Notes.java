@@ -3,7 +3,9 @@ package ru.androidlearning.notes.data;
 import java.util.List;
 
 public interface Notes {
-    void initNotes(boolean isTest);
+    Notes initNotes(boolean isTest);
+
+    Notes initNotes(NotesResponse notesResponse);
 
     void addNote(String title, String noteText, String noteDate);
 

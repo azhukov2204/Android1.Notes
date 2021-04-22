@@ -14,7 +14,7 @@ public class NotesImpl implements Notes {
     }
 
     @Override
-    public void initNotes(boolean isTest) {
+    public Notes initNotes(boolean isTest) {
         if (isTest) {
             notesList.addAll(Arrays.asList(
                     new NoteEntry("title1", "massage1"),
@@ -25,8 +25,13 @@ public class NotesImpl implements Notes {
                     new NoteEntry("title6", "message6"),
                     new NoteEntry("title7", "message7")));
         }
+        return this;
     }
 
+    @Override
+    public Notes initNotes(NotesResponse notesResponse) {
+        return this;
+    }
 
     public void addNote(String title, String noteText, String noteDate) {
         notesList.add(new NoteEntry(title, noteText, noteDate));
