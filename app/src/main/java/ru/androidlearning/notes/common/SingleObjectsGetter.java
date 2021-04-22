@@ -1,26 +1,25 @@
-package ru.androidlearning.notes.data;
+package ru.androidlearning.notes.common;
+
 import com.squareup.otto.Bus;
+
+import ru.androidlearning.notes.data.Notes;
+import ru.androidlearning.notes.data.NotesImpl;
 
 public class SingleObjectsGetter {
     private static Notes notes = null;
     private static Bus bus = null;
+    private static final boolean TEST_MODE = true;
 
     public static Notes getNotes() {
         if (notes == null) {
-            notes = new Notes();
-        }
-        return notes;
-    }
-
-    public static Notes getNotes(boolean isTest) {
-        if (notes == null) {
-            notes = new Notes(isTest);
+            notes = new NotesImpl();
+            notes.initNotes(TEST_MODE);
         }
         return notes;
     }
 
     public static Bus getBus() {
-        if(bus == null) {
+        if (bus == null) {
             bus = new Bus();
         }
         return bus;

@@ -29,10 +29,10 @@ import java.util.Locale;
 import java.util.Objects;
 
 import ru.androidlearning.notes.R;
-import ru.androidlearning.notes.data.ChangeNoteTypes;
-import ru.androidlearning.notes.data.DeleteNoteInLandscapeEvent;
-import ru.androidlearning.notes.data.SingleObjectsGetter;
-import ru.androidlearning.notes.data.ChangeNoteEvent;
+import ru.androidlearning.notes.bus_events.ChangeNoteTypes;
+import ru.androidlearning.notes.bus_events.DeleteNoteInLandscapeEvent;
+import ru.androidlearning.notes.common.SingleObjectsGetter;
+import ru.androidlearning.notes.bus_events.ChangeNoteEvent;
 
 public class NoteDetailFragment extends Fragment {
 

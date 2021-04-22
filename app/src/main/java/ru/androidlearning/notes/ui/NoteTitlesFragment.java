@@ -19,7 +19,6 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.os.Handler;
 import android.os.Looper;
-import android.util.Log;
 import android.view.ContextMenu;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -36,10 +35,10 @@ import java.util.Objects;
 
 import ru.androidlearning.notes.MainActivity;
 import ru.androidlearning.notes.R;
-import ru.androidlearning.notes.data.ChangeNoteTypes;
-import ru.androidlearning.notes.data.DeleteNoteInLandscapeEvent;
-import ru.androidlearning.notes.data.SingleObjectsGetter;
-import ru.androidlearning.notes.data.ChangeNoteEvent;
+import ru.androidlearning.notes.bus_events.ChangeNoteTypes;
+import ru.androidlearning.notes.bus_events.DeleteNoteInLandscapeEvent;
+import ru.androidlearning.notes.common.SingleObjectsGetter;
+import ru.androidlearning.notes.bus_events.ChangeNoteEvent;
 
 
 public class NoteTitlesFragment extends Fragment {
@@ -195,7 +194,7 @@ public class NoteTitlesFragment extends Fragment {
         //noteTitlesListRV.setHasFixedSize(true);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
         noteTitlesListRV.setLayoutManager(linearLayoutManager);
-        noteTitlesAdapter = new NoteTitlesAdapter(SingleObjectsGetter.getNotes(true), this);
+        noteTitlesAdapter = new NoteTitlesAdapter(SingleObjectsGetter.getNotes(), this);
         noteTitlesListRV.setAdapter(noteTitlesAdapter);
 
         DividerItemDecoration itemDecoration = new DividerItemDecoration(Objects.requireNonNull(getContext()), LinearLayoutManager.VERTICAL);

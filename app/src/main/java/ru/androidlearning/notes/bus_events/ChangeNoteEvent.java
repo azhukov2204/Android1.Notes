@@ -1,4 +1,4 @@
-package ru.androidlearning.notes.data;
+package ru.androidlearning.notes.bus_events;
 
 public class ChangeNoteEvent {
     private final int newIndexOfNote;
