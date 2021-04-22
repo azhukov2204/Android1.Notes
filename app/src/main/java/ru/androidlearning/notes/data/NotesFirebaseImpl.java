@@ -79,7 +79,9 @@ public class NotesFirebaseImpl implements Notes {
         notesListLocal.get(index).setNoteTitle(noteTitle);
         notesListLocal.get(index).setNoteText(noteText);
         notesListLocal.get(index).setNoteCreatedDate(noteDate);
-        notesListFirestore.document(firebaseId).set(new NoteEntry(noteTitle, noteText, noteDate));
+        if (firebaseId != null && !firebaseId.isEmpty()) {
+            notesListFirestore.document(firebaseId).set(new NoteEntry(noteTitle, noteText, noteDate));
+        }
     }
 
     public String getNoteTitleByIndex(int index) {
