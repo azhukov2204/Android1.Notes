@@ -47,11 +47,13 @@ public class NotesFirebaseImpl implements Notes {
                     if (task.isSuccessful()) {
                         notesListLocal = new ArrayList<>();
                         QuerySnapshot querySnapshot = task.getResult();
-                        for (QueryDocumentSnapshot queryDocumentSnapshot : querySnapshot) {
-                            Map<String, Object> doc = queryDocumentSnapshot.getData();
-                            String id = queryDocumentSnapshot.getId();
-                            NoteEntry noteEntry = NotesDataMapping.toNoteEntry(id, doc);
-                            notesListLocal.add(noteEntry);
+                        if (querySnapshot != null) {
+                            for (QueryDocumentSnapshot queryDocumentSnapshot : querySnapshot) {
+                                Map<String, Object> doc = queryDocumentSnapshot.getData();
+                                String id = queryDocumentSnapshot.getId();
+                                NoteEntry noteEntry = NotesDataMapping.toNoteEntry(id, doc);
+                                notesListLocal.add(noteEntry);
+                            }
                         }
                         Log.d(LOG_TAG, "Success. Read " + notesListLocal.size() + " notes");
                         notesResponse.afterInitialization(NotesFirebaseImpl.this);
@@ -80,7 +82,7 @@ public class NotesFirebaseImpl implements Notes {
         notesListLocal.get(index).setNoteText(noteText);
         notesListLocal.get(index).setNoteCreatedDate(noteDate);
         if (firebaseId != null && !firebaseId.isEmpty()) {
-            notesListFirestore.document(firebaseId).set(new NoteEntry(noteTitle, noteText, noteDate));
+            notesListFirestore.document(firebaseId).set(NotesDataMapping.toFirebaseDocument(new NoteEntry(noteTitle, noteText, noteDate)));
         }
     }
 
