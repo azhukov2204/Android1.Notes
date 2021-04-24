@@ -16,52 +16,80 @@ import android.os.Bundle;
 import android.util.Log;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
 
 import java.util.Objects;
 
+import ru.androidlearning.notes.common.UserData;
 import ru.androidlearning.notes.ui.AboutFragment;
+import ru.androidlearning.notes.ui.AuthFragment;
 import ru.androidlearning.notes.ui.NoteTitlesFragment;
 import ru.androidlearning.notes.ui.SettingsFragment;
 
 public class MainActivity extends AppCompatActivity {
 
     private final static String IS_HIDDEN_NOTE_DETAIL_CONTAINER_BUNDLE_KEY = "isHiddenNoteDetailContainer";
-    private static boolean isHiddenNoteDetailContainer = false;
+    private final static String IS_AUTHENTICATION_DONE_BUNDLE_KEY = "isAuthenticationDone";
+    private final static String USER_DATA_BUNDLE_KEY = "userData";
+    private boolean isHiddenNoteDetailContainer = false;
+    private boolean isAuthenticationDone = false;
+    private static final String LOG_TAG = "[MainActivity]";
     FloatingActionButton addNewNoteFAB;
     private ActionBarDrawerToggle actionBarDrawerToggle;
     private DrawerLayout drawerLayout;
+    private UserData userData = new UserData();
+    private TextView userLoginTextView;
+    private TextView userMailView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        Log.d(LOG_TAG, "onCreate");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
         initViews();
-        checkInstanceStateAndHideOrShowNoteDetailFragmentContainer(savedInstanceState);
-        openNoteTitlesFragmentAtFirstRun(savedInstanceState);
+
+        if (savedInstanceState != null) {
+            isHiddenNoteDetailContainer = savedInstanceState.getBoolean(IS_HIDDEN_NOTE_DETAIL_CONTAINER_BUNDLE_KEY);
+            isAuthenticationDone = savedInstanceState.getBoolean(IS_AUTHENTICATION_DONE_BUNDLE_KEY);
+        }
+
+        checkInstanceStateAndHideOrShowNoteDetailFragmentContainer();
+
+        if (isAuthenticationDone) {
+            openNoteTitlesFragmentAtFirstRun(savedInstanceState);
+        } else {
+            openAuthFragment();
+        }
+
         removeUnnecessaryNoteDetailFragment(); //при смене ориентации на портретную надо удалить фрагмент из noteDetailFragmentContainer, иначе в ToolBar останется его меню
     }
 
     @Override
     protected void onSaveInstanceState(@NonNull Bundle outState) {
+        Log.d(LOG_TAG, "onSaveInstanceState");
         super.onSaveInstanceState(outState);
         outState.putBoolean(IS_HIDDEN_NOTE_DETAIL_CONTAINER_BUNDLE_KEY, isHiddenNoteDetailContainer);
+        outState.putBoolean(IS_AUTHENTICATION_DONE_BUNDLE_KEY, isAuthenticationDone);
+        outState.putParcelable(USER_DATA_BUNDLE_KEY, userData);
     }
 
-    private void checkInstanceStateAndHideOrShowNoteDetailFragmentContainer(Bundle savedInstanceState) {
-        if (savedInstanceState != null) {
-            if (savedInstanceState.getBoolean(IS_HIDDEN_NOTE_DETAIL_CONTAINER_BUNDLE_KEY)) {
-                Log.d("Is Hidden", "IS_HIDDEN_NOTE_DETAIL_CONTAINER_BUNDLE_KEY - true");
-                hideNoteDetailFragmentContainerInLandscape();
-            } else {
-                showNoteDetailFragmentContainerInLandscape();
-                Log.d("Is Hidden", "IS_HIDDEN_NOTE_DETAIL_CONTAINER_BUNDLE_KEY - false");
-            }
+    @Override
+    protected void onRestoreInstanceState(@NonNull Bundle savedInstanceState) {
+        Log.d(LOG_TAG, "onRestoreInstanceState");
+        super.onRestoreInstanceState(savedInstanceState);
+        userData = savedInstanceState.getParcelable(USER_DATA_BUNDLE_KEY);
+        setUserDataToNavHeader();
+    }
+
+    private void checkInstanceStateAndHideOrShowNoteDetailFragmentContainer() {
+        if (isHiddenNoteDetailContainer) {
+            hideNoteDetailFragmentContainerInLandscape();
         } else {
-            Log.d("Is Hidden", "IS_HIDDEN_NOTE_DETAIL_CONTAINER_BUNDLE_KEY - none");
+            showNoteDetailFragmentContainerInLandscape();
         }
     }
 
@@ -115,20 +143,9 @@ public class MainActivity extends AppCompatActivity {
             }
             return false;
         });
-    }
 
-    public void showHomeButtonOnToolbar() {
-        drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
-        actionBarDrawerToggle.setDrawerIndicatorEnabled(false);
-        Objects.requireNonNull(getSupportActionBar()).setDisplayHomeAsUpEnabled(true);
-        actionBarDrawerToggle.setToolbarNavigationClickListener(v -> onBackPressed());
-    }
-
-    public void showBurgerButtonOnToolbar() {
-        drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED);
-        Objects.requireNonNull(getSupportActionBar()).setDisplayHomeAsUpEnabled(false);
-        actionBarDrawerToggle.setDrawerIndicatorEnabled(true);
-        actionBarDrawerToggle.setToolbarNavigationClickListener(null);
+        userLoginTextView = navigationView.getHeaderView(0).findViewById(R.id.userLoginTextView);
+        userMailView = navigationView.getHeaderView(0).findViewById(R.id.userMailTextView);
     }
 
     @SuppressLint("NonConstantResourceId")
@@ -147,6 +164,26 @@ public class MainActivity extends AppCompatActivity {
         return false;
     }
 
+    public void showHomeButtonOnToolbar() {
+        drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
+        actionBarDrawerToggle.setDrawerIndicatorEnabled(false);
+        Objects.requireNonNull(getSupportActionBar()).setDisplayHomeAsUpEnabled(true);
+        actionBarDrawerToggle.setToolbarNavigationClickListener(v -> onBackPressed());
+    }
+
+    public void showBurgerButtonOnToolbar() {
+        drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED);
+        Objects.requireNonNull(getSupportActionBar()).setDisplayHomeAsUpEnabled(false);
+        actionBarDrawerToggle.setDrawerIndicatorEnabled(true);
+        actionBarDrawerToggle.setToolbarNavigationClickListener(null);
+    }
+
+    public void hideButtonsOnToolbar() {
+        Objects.requireNonNull(getSupportActionBar()).setDisplayHomeAsUpEnabled(false);
+        actionBarDrawerToggle.setDrawerIndicatorEnabled(false);
+        actionBarDrawerToggle.setToolbarNavigationClickListener(null);
+    }
+
     private void openSettingsFragment() {
         addNewNoteFAB.hide();
         clearBackStack();
@@ -163,11 +200,21 @@ public class MainActivity extends AppCompatActivity {
         runFragment(aboutFragment);
     }
 
-    private void openNotesFragment() {
+    public void openNotesFragment() {
+        Log.d(LOG_TAG, userData.getUserName() + " " + userData.getUserEmail());
         addNewNoteFAB.show();
         showNoteDetailFragmentContainerInLandscape();
         NoteTitlesFragment noteTitlesFragment = new NoteTitlesFragment();
         runFragment(noteTitlesFragment);
+    }
+
+    private void openAuthFragment() {
+        hideButtonsOnToolbar();
+        addNewNoteFAB.hide();
+        clearBackStack();
+        hideNoteDetailFragmentContainerInLandscape();
+        Fragment authFragment = AuthFragment.newInstance();
+        runFragment(authFragment);
     }
 
     private void runFragment(Fragment fragment) {
@@ -206,6 +253,17 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    public void setUserData(boolean isAuthenticationDone, String userName, String userEmail) {
+        this.isAuthenticationDone = isAuthenticationDone;
+        userData.setUserName(userName);
+        userData.setUserEmail(userEmail);
+        setUserDataToNavHeader();
+    }
+
+    private void setUserDataToNavHeader() {
+        userLoginTextView.setText(userData.getUserName());
+        userMailView.setText(userData.getUserEmail());
+    }
 }
 
 
