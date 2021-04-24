@@ -62,7 +62,7 @@ public class MainActivity extends AppCompatActivity {
         if (isAuthenticationDone) {
             openNoteTitlesFragmentAtFirstRun(savedInstanceState);
         } else {
-            openAuthFragment();
+            openAuthFragment(false);
         }
 
         removeUnnecessaryNoteDetailFragment(); //при смене ориентации на портретную надо удалить фрагмент из noteDetailFragmentContainer, иначе в ToolBar останется его меню
@@ -160,6 +160,9 @@ public class MainActivity extends AppCompatActivity {
             case R.id.action_about:
                 openAboutFragment();
                 return true;
+            case R.id.action_logout:
+                openAuthFragment(true);
+                return true;
         }
         return false;
     }
@@ -208,12 +211,15 @@ public class MainActivity extends AppCompatActivity {
         runFragment(noteTitlesFragment);
     }
 
-    private void openAuthFragment() {
+    private void openAuthFragment(boolean isSignOutRequired) {
         hideButtonsOnToolbar();
         addNewNoteFAB.hide();
         clearBackStack();
         hideNoteDetailFragmentContainerInLandscape();
-        Fragment authFragment = AuthFragment.newInstance();
+        if (isSignOutRequired) {
+            setUserData(false, null, null);
+        }
+        Fragment authFragment = AuthFragment.newInstance(isSignOutRequired);
         runFragment(authFragment);
     }
 

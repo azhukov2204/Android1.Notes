@@ -18,6 +18,7 @@ import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.common.api.ApiException;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 
 import ru.androidlearning.notes.MainActivity;
@@ -29,13 +30,19 @@ public class AuthFragment extends Fragment {
     private static final int RC_SIGN_IN = 40404;
     private static final String LOG_TAG = "[AuthFragment]";
     private MainActivity mainActivity;
+    private static final String IS_SIGNOUT_REQUIRED_BUNDLE_KEY = "isSignOutRequired";
 
-    public static AuthFragment newInstance() {
+
+    public static AuthFragment newInstance(boolean isSignOutRequired) {
         AuthFragment fragment = new AuthFragment();
         Bundle args = new Bundle();
-        //args.putString(ARG_PARAM1, param1);
+        args.putBoolean(IS_SIGNOUT_REQUIRED_BUNDLE_KEY, isSignOutRequired);
         fragment.setArguments(args);
         return fragment;
+    }
+
+    private void signOut() {
+        googleSignInClient.signOut().addOnCompleteListener(task -> AuthFragment.this.getArguments().putBoolean(IS_SIGNOUT_REQUIRED_BUNDLE_KEY, false));
     }
 
     @Override
@@ -60,6 +67,21 @@ public class AuthFragment extends Fragment {
         return view;
     }
 
+    @Override
+    public void onStart() {
+        super.onStart();
+        boolean isSignOutRequired = getArguments().getBoolean(IS_SIGNOUT_REQUIRED_BUNDLE_KEY);
+
+        GoogleSignInAccount googleSignInAccount = GoogleSignIn.getLastSignedInAccount(getContext());
+        if (googleSignInAccount != null) {
+            if (!isSignOutRequired) {
+                startNotesWithAuthData(googleSignInAccount);
+            } else {
+                signOut();
+            }
+        }
+    }
+
     private void signInWithGoogle() {
         Intent signInIntent = googleSignInClient.getSignInIntent();
         startActivityForResult(signInIntent, RC_SIGN_IN);
@@ -69,17 +91,20 @@ public class AuthFragment extends Fragment {
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == RC_SIGN_IN) {
-            Task<GoogleSignInAccount> task =GoogleSignIn.getSignedInAccountFromIntent(data);
+            Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
             try {
                 GoogleSignInAccount googleSignInAccount = task.getResult(ApiException.class);
-                mainActivity.setUserData(true, googleSignInAccount.getDisplayName(), googleSignInAccount.getEmail());
-                mainActivity.openNotesFragment();
-
-                //googleSignInAccount.
+                startNotesWithAuthData(googleSignInAccount);
             } catch (ApiException e) {
                 Log.w(LOG_TAG, "GoogleSignInResult:failed code= " + e.getStatusCode());
             }
         }
+
+    }
+
+    private void startNotesWithAuthData(GoogleSignInAccount googleSignInAccount) {
+        mainActivity.setUserData(true, googleSignInAccount.getDisplayName(), googleSignInAccount.getEmail());
+        mainActivity.openNotesFragment();
 
     }
 }

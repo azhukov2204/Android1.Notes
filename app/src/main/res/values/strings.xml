@@ -25,4 +25,5 @@
     <string name="userAvatarImageView">User Avatar</string>
     <string name="userLoginTextView">Vasya Pupkin</string>
     <string name="userMailView">vasya@somehost.com</string>
+    <string name="logoutMenuItem">Logout</string>
 </resources>
