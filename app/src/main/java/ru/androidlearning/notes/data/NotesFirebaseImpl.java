@@ -26,13 +26,17 @@ public class NotesFirebaseImpl implements Notes {
     private static final String NOTES_FIREBASE_COLLECTION = "notes";
     private static final String LOG_TAG = "[NotesFirebaseImpl]";
     private List<NoteEntry> notesListLocal;
-    private final CollectionReference notesListFirestore;
+    private CollectionReference notesListFirestore;
 
 
     public NotesFirebaseImpl() {
         notesListLocal = new ArrayList<>();
+    }
+
+    @Override
+    public void setFirebaseCollectionName(String firebaseCollectionName) {
         FirebaseFirestore firestoreDB = FirebaseFirestore.getInstance();
-        notesListFirestore = firestoreDB.collection(NOTES_FIREBASE_COLLECTION);
+        notesListFirestore = firestoreDB.collection(NOTES_FIREBASE_COLLECTION + ":" + firebaseCollectionName);
     }
 
     @Override

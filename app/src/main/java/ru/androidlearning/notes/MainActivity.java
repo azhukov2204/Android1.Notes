@@ -23,6 +23,7 @@ import com.google.android.material.navigation.NavigationView;
 
 import java.util.Objects;
 
+import ru.androidlearning.notes.common.SingleObjectsGetter;
 import ru.androidlearning.notes.common.UserData;
 import ru.androidlearning.notes.ui.AboutFragment;
 import ru.androidlearning.notes.ui.AuthFragment;
@@ -269,6 +270,7 @@ public class MainActivity extends AppCompatActivity {
     private void setUserDataToNavHeader() {
         userLoginTextView.setText(userData.getUserName());
         userMailView.setText(userData.getUserEmail());
+        SingleObjectsGetter.getNotes().setFirebaseCollectionName(userData.getUserEmail()); //дял каждого пользователя заметки будут храниться в своей коллекции в Firebase
     }
 }
 
