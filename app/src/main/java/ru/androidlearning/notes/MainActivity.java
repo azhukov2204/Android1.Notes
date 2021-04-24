@@ -12,14 +12,17 @@ import androidx.fragment.app.FragmentTransaction;
 
 import android.annotation.SuppressLint;
 import android.content.res.Configuration;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
+import com.squareup.picasso.Picasso;
 
 import java.util.Objects;
 
@@ -44,6 +47,7 @@ public class MainActivity extends AppCompatActivity {
     private UserData userData = new UserData();
     private TextView userLoginTextView;
     private TextView userMailView;
+    private ImageView userAvatarImageView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -147,6 +151,7 @@ public class MainActivity extends AppCompatActivity {
 
         userLoginTextView = navigationView.getHeaderView(0).findViewById(R.id.userLoginTextView);
         userMailView = navigationView.getHeaderView(0).findViewById(R.id.userMailTextView);
+        userAvatarImageView = navigationView.getHeaderView(0).findViewById(R.id.userAvatarImageView);
     }
 
     @SuppressLint("NonConstantResourceId")
@@ -218,7 +223,7 @@ public class MainActivity extends AppCompatActivity {
         clearBackStack();
         hideNoteDetailFragmentContainerInLandscape();
         if (isSignOutRequired) {
-            setUserData(false, null, null);
+            setUserData(false, null, null, null);
         }
         Fragment authFragment = AuthFragment.newInstance(isSignOutRequired);
         runFragment(authFragment);
@@ -260,16 +265,24 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    public void setUserData(boolean isAuthenticationDone, String userName, String userEmail) {
+    public void setUserData(boolean isAuthenticationDone, String userName, String userEmail, Uri userAvatarUri) {
         this.isAuthenticationDone = isAuthenticationDone;
         userData.setUserName(userName);
         userData.setUserEmail(userEmail);
+        userData.setUserAvatarUri(userAvatarUri);
         setUserDataToNavHeader();
     }
 
     private void setUserDataToNavHeader() {
         userLoginTextView.setText(userData.getUserName());
         userMailView.setText(userData.getUserEmail());
+        userAvatarImageView.setImageURI(null);
+        if (userData.getUserAvatarUri() != null) {
+            Picasso.get().load(userData.getUserAvatarUri()).into(userAvatarImageView);
+        } else {
+            userAvatarImageView.setImageResource(R.mipmap.ic_launcher_round);
+        }
+        //userAvatarImageView.setImageURI(Uri.parse(userData.getUserAvatarUri().toString()));
         SingleObjectsGetter.getNotes().setFirebaseCollectionName(userData.getUserEmail()); //дял каждого пользователя заметки будут храниться в своей коллекции в Firebase
     }
 }

@@ -59,6 +59,7 @@ public class AuthFragment extends Fragment {
 
         GoogleSignInOptions googleSignInOptions = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestEmail()
+                .requestProfile()
                 .build();
         googleSignInClient = GoogleSignIn.getClient(getContext(), googleSignInOptions);
 
@@ -103,8 +104,7 @@ public class AuthFragment extends Fragment {
     }
 
     private void startNotesWithAuthData(GoogleSignInAccount googleSignInAccount) {
-        mainActivity.setUserData(true, googleSignInAccount.getDisplayName(), googleSignInAccount.getEmail());
+        mainActivity.setUserData(true, googleSignInAccount.getDisplayName(), googleSignInAccount.getEmail(), googleSignInAccount.getPhotoUrl());
         mainActivity.openNotesFragment();
-
     }
 }

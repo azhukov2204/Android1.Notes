@@ -1,20 +1,24 @@
 package ru.androidlearning.notes.common;
 
+import android.net.Uri;
 import android.os.Parcel;
 import android.os.Parcelable;
 
 public class UserData implements Parcelable {
     private String userName;
     private String userEmail;
+    private Uri userAvatarUri;
 
     public UserData() {
         userName = null;
         userEmail = null;
+        userAvatarUri = null;
     }
 
     protected UserData(Parcel in) {
         userName = in.readString();
         userEmail = in.readString();
+        userAvatarUri = Uri.parse(in.readString());
     }
 
     public static final Creator<UserData> CREATOR = new Creator<UserData>() {
@@ -38,6 +42,7 @@ public class UserData implements Parcelable {
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeString(userName);
         dest.writeString(userEmail);
+        dest.writeString(userAvatarUri.toString());
     }
 
     public String getUserName() {
@@ -56,4 +61,11 @@ public class UserData implements Parcelable {
         this.userEmail = userEmail;
     }
 
+    public void setUserAvatarUri(Uri userAvatarUri) {
+        this.userAvatarUri = userAvatarUri;
+    }
+
+    public Uri getUserAvatarUri() {
+        return userAvatarUri;
+    }
 }
