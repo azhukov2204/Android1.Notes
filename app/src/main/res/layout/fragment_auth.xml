@@ -5,17 +5,38 @@
     android:layout_height="match_parent"
     tools:context=".ui.AuthFragment">
 
-    <com.google.android.gms.common.SignInButton
-        android:id="@+id/googleSignIn"
+    <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="center"/>
+        android:layout_marginTop="20dp"
+        android:textColor="@color/black"
+        android:textStyle="bold"
+        android:text="@string/pleaseAuthenticateMessage"
+        android:textSize="30sp"
+        android:layout_gravity="center|top"/>
 
-    <Button
-        android:id="@+id/vkSignIn"
+    <androidx.appcompat.widget.LinearLayoutCompat
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="VK"
-        android:layout_gravity="top|center"/>
+        android:layout_gravity="center"
+        android:orientation="vertical">
+
+        <com.google.android.gms.common.SignInButton
+            android:id="@+id/googleSignIn"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <Button
+            android:id="@+id/vkSignIn"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="top|center"
+            android:background="@color/vk"
+            android:layout_margin="4dp"
+            android:text="@string/signInWithVKButtonText"
+            android:textColor="#ffffffff" />
+
+    </androidx.appcompat.widget.LinearLayoutCompat>
+
 
 </FrameLayout>

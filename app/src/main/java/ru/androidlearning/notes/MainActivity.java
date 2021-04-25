@@ -357,7 +357,6 @@ public class MainActivity extends AppCompatActivity {
         } else {
             userAvatarImageView.setImageResource(R.mipmap.ic_launcher_round);
         }
-        //userAvatarImageView.setImageURI(Uri.parse(userData.getUserAvatarUri().toString()));
         SingleObjectsGetter.getNotes().setFirebaseCollectionName(userData.getUserID()); //дял каждого пользователя заметки будут храниться в своей коллекции в Firebase
     }
 }

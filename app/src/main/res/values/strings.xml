@@ -26,4 +26,6 @@
     <string name="userLoginTextView">Vasya Pupkin</string>
     <string name="userMailView">vasya@somehost.com</string>
     <string name="logoutMenuItem">Logout</string>
+    <string name="signInWithVKButtonText">SignIn With VK</string>
+    <string name="pleaseAuthenticateMessage">Please authenticate</string>
 </resources>
