@@ -4,18 +4,23 @@ import android.net.Uri;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import ru.androidlearning.notes.R;
+
 public class UserData implements Parcelable {
+    private String userID;
     private String userName;
     private String userEmail;
     private Uri userAvatarUri;
 
     public UserData() {
-        userName = null;
-        userEmail = null;
+        userID = "";
+        userName = "";
+        userEmail = "";
         userAvatarUri = null;
     }
 
     protected UserData(Parcel in) {
+        userID = in.readString();
         userName = in.readString();
         userEmail = in.readString();
         userAvatarUri = Uri.parse(in.readString());
@@ -40,9 +45,34 @@ public class UserData implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
+        String userAvatarUriString;
+        if (userID == null) {
+            userID = "";
+        }
+
+        if (userName == null) {
+            userName = "";
+        }
+        if (userEmail == null) {
+            userEmail = "";
+        }
+        if (userAvatarUri == null) {
+            userAvatarUriString = "";
+        } else {
+            userAvatarUriString = userAvatarUri.toString();
+        }
+        dest.writeString(userID);
         dest.writeString(userName);
         dest.writeString(userEmail);
-        dest.writeString(userAvatarUri.toString());
+        dest.writeString(userAvatarUriString);
+    }
+
+    public String getUserID() {
+        return userID;
+    }
+
+    public void setUserID(String userID) {
+        this.userID = userID;
     }
 
     public String getUserName() {

@@ -1,6 +1,7 @@
 package ru.androidlearning.notes;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
@@ -11,6 +12,7 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
 import android.annotation.SuppressLint;
+import android.content.Intent;
 import android.content.res.Configuration;
 import android.net.Uri;
 import android.os.Bundle;
@@ -23,7 +25,25 @@ import android.widget.TextView;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
 import com.squareup.picasso.Picasso;
+import com.vk.api.sdk.VK;
+import com.vk.api.sdk.VKApiCallback;
+import com.vk.api.sdk.auth.VKAccessToken;
+import com.vk.api.sdk.auth.VKAuthCallback;
+import com.vk.sdk.api.account.AccountService;
+import com.vk.sdk.api.account.dto.AccountUserSettings;
+import com.vk.sdk.api.base.dto.BaseUploadServer;
+import com.vk.sdk.api.friends.FriendsService;
+import com.vk.sdk.api.photos.PhotosService;
+import com.vk.sdk.api.users.UsersService;
+import com.vk.sdk.api.users.dto.UsersFields;
+import com.vk.sdk.api.users.dto.UsersUserXtrCounters;
 
+import org.jetbrains.annotations.NotNull;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 import java.util.Objects;
 
 import ru.androidlearning.notes.common.SingleObjectsGetter;
@@ -88,6 +108,60 @@ public class MainActivity extends AppCompatActivity {
         super.onRestoreInstanceState(savedInstanceState);
         userData = savedInstanceState.getParcelable(USER_DATA_BUNDLE_KEY);
         setUserDataToNavHeader();
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        VKAuthCallback callback = new VKAuthCallback() {
+            @Override
+            public void onLogin(@NotNull VKAccessToken vkAccessToken) {
+                //userData.setUserEmail(vkAccessToken.getEmail());
+                startNotesWithAuthDataVK();
+            }
+
+            @Override
+            public void onLoginFailed(int i) {
+                Log.w(LOG_TAG, "VKSignInResult:failed code= " + i);
+            }
+        };
+
+        if (data == null || !VK.onActivityResult(requestCode, resultCode, data, callback)) {
+            super.onActivityResult(requestCode, resultCode, data);
+        }
+    }
+
+    public void startNotesWithAuthDataVK() {
+        VK.execute(new AccountService().accountGetProfileInfo(), new VKApiCallback<AccountUserSettings>() {
+            @Override
+            public void success(AccountUserSettings accountUserSettings) {
+                userData.setUserID("VK" + accountUserSettings.getId());
+                userData.setUserName(accountUserSettings.getFirstName() + " " + accountUserSettings.getLastName());
+                isAuthenticationDone = true;
+                List<UsersFields> usersFields = Collections.singletonList(UsersFields.PHOTO_100);
+                VK.execute(new UsersService().usersGet(null, usersFields, null), new VKApiCallback<List<UsersUserXtrCounters>>() {
+                    @Override
+                    public void success(List<UsersUserXtrCounters> usersUserXtrCounters) {
+                        for (UsersUserXtrCounters usersUserXtrCounter : usersUserXtrCounters) {
+                            userData.setUserAvatarUri(Uri.parse(usersUserXtrCounter.getPhoto100()));
+                            Log.d(LOG_TAG, usersUserXtrCounter.getPhoto100());
+                            setUserDataToNavHeader();
+                            openNotesFragment();
+                        }
+                    }
+
+                    @Override
+                    public void fail(@NotNull Exception e) {
+                        Log.w(LOG_TAG, "VKSignInResult:error while reading email = " + e.getMessage());
+                    }
+                });
+            }
+
+            @Override
+            public void fail(@NotNull Exception e) {
+                Log.e(LOG_TAG, "VKSignInResult:failed code= " + e.getMessage());
+            }
+        });
     }
 
     private void checkInstanceStateAndHideOrShowNoteDetailFragmentContainer() {
@@ -223,7 +297,7 @@ public class MainActivity extends AppCompatActivity {
         clearBackStack();
         hideNoteDetailFragmentContainerInLandscape();
         if (isSignOutRequired) {
-            setUserData(false, null, null, null);
+            setUserData(false, "", "", "", null);
         }
         Fragment authFragment = AuthFragment.newInstance(isSignOutRequired);
         runFragment(authFragment);
@@ -265,8 +339,9 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    public void setUserData(boolean isAuthenticationDone, String userName, String userEmail, Uri userAvatarUri) {
+    public void setUserData(boolean isAuthenticationDone, String userId, String userName, String userEmail, Uri userAvatarUri) {
         this.isAuthenticationDone = isAuthenticationDone;
+        userData.setUserID(userId);
         userData.setUserName(userName);
         userData.setUserEmail(userEmail);
         userData.setUserAvatarUri(userAvatarUri);
@@ -283,7 +358,7 @@ public class MainActivity extends AppCompatActivity {
             userAvatarImageView.setImageResource(R.mipmap.ic_launcher_round);
         }
         //userAvatarImageView.setImageURI(Uri.parse(userData.getUserAvatarUri().toString()));
-        SingleObjectsGetter.getNotes().setFirebaseCollectionName(userData.getUserEmail()); //дял каждого пользователя заметки будут храниться в своей коллекции в Firebase
+        SingleObjectsGetter.getNotes().setFirebaseCollectionName(userData.getUserID()); //дял каждого пользователя заметки будут храниться в своей коллекции в Firebase
     }
 }
 

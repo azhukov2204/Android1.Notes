@@ -11,4 +11,11 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center"/>
 
+    <Button
+        android:id="@+id/vkSignIn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="VK"
+        android:layout_gravity="top|center"/>
+
 </FrameLayout>
