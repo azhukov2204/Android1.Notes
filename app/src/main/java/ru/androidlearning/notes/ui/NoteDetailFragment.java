@@ -32,6 +32,7 @@ import java.util.Objects;
 import ru.androidlearning.notes.R;
 import ru.androidlearning.notes.bus_events.ChangeNoteTypes;
 import ru.androidlearning.notes.bus_events.DeleteNoteInLandscapeEvent;
+import ru.androidlearning.notes.common.ConfirmDeletingAlertDialog;
 import ru.androidlearning.notes.common.SingleObjectsGetter;
 import ru.androidlearning.notes.bus_events.ChangeNoteEvent;
 
@@ -196,19 +197,21 @@ public class NoteDetailFragment extends Fragment {
     }
 
     private void deleteCurrentNote() {
-        if (currentIndexOfNote >= 0) {
-            isDeleting = true;
-            SingleObjectsGetter.getNotes().deleteNoteByIndex(currentIndexOfNote);
-            if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
-                Objects.requireNonNull(getActivity()).onBackPressed();
+        ConfirmDeletingAlertDialog.runDialog(requireContext(), () -> {  //Вызывается алерт для подтверждения удаления. В случае подтверждения отработает код анонимного класса
+            if (currentIndexOfNote >= 0) {
+                isDeleting = true;
+                SingleObjectsGetter.getNotes().deleteNoteByIndex(currentIndexOfNote);
+                if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
+                    Objects.requireNonNull(getActivity()).onBackPressed();
+                } else {
+                    FragmentManager fragmentManager = requireActivity().getSupportFragmentManager();
+                    fragmentManager.beginTransaction().remove(this).commit();
+                }
+                SingleObjectsGetter.getBus().post(new ChangeNoteEvent(-1, ChangeNoteTypes.DELETE));
             } else {
-                FragmentManager fragmentManager = requireActivity().getSupportFragmentManager();
-                fragmentManager.beginTransaction().remove(this).commit();
+                Toast.makeText(getContext(), "Nothing to delete...", Toast.LENGTH_SHORT).show();
             }
-            SingleObjectsGetter.getBus().post(new ChangeNoteEvent(-1, ChangeNoteTypes.DELETE));
-        } else {
-            Toast.makeText(getContext(), "Nothing to delete...", Toast.LENGTH_SHORT).show();
-        }
+        });
     }
 
     @Subscribe

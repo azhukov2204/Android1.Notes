@@ -19,6 +19,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.os.Handler;
 import android.os.Looper;
+import android.util.Log;
 import android.view.ContextMenu;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -37,10 +38,9 @@ import ru.androidlearning.notes.MainActivity;
 import ru.androidlearning.notes.R;
 import ru.androidlearning.notes.bus_events.ChangeNoteTypes;
 import ru.androidlearning.notes.bus_events.DeleteNoteInLandscapeEvent;
+import ru.androidlearning.notes.common.ConfirmDeletingAlertDialog;
 import ru.androidlearning.notes.common.SingleObjectsGetter;
 import ru.androidlearning.notes.bus_events.ChangeNoteEvent;
-import ru.androidlearning.notes.data.Notes;
-import ru.androidlearning.notes.data.NotesResponse;
 
 
 public class NoteTitlesFragment extends Fragment {
@@ -53,6 +53,7 @@ public class NoteTitlesFragment extends Fragment {
     private ChangeNoteEvent changeNoteEvent;
     private static final int MY_DEFAULT_DURATION = 600;
     private MainActivity mainActivity;
+    private static final String LOG_TAG = "[NoteTitlesFragment]";
 
     private FloatingActionButton addNewNoteFAB;
 
@@ -293,14 +294,16 @@ public class NoteTitlesFragment extends Fragment {
     @Override
     public boolean onContextItemSelected(@NonNull MenuItem item) {
         currentIndexOfNote = noteTitlesAdapter.getMenuPosition();
-
         if (item.getItemId() == R.id.action_delete_context) {
-            if (isNoteDetailFragmentOpened()) {
-                SingleObjectsGetter.getBus().post(new DeleteNoteInLandscapeEvent());
-            } else {
-                SingleObjectsGetter.getNotes().deleteNoteByIndex(currentIndexOfNote);
-                notifyNoteTitlesAdapter(new ChangeNoteEvent(-1, ChangeNoteTypes.DELETE));
-            }
+            ConfirmDeletingAlertDialog.runDialog(requireContext(), () -> { //Вызывается алерт для подтверждения удаления. В случае подтверждения отработает код анонимного класса
+                if (isNoteDetailFragmentOpened()) {
+                    SingleObjectsGetter.getBus().post(new DeleteNoteInLandscapeEvent());
+                } else {
+                    SingleObjectsGetter.getNotes().deleteNoteByIndex(currentIndexOfNote);
+                    notifyNoteTitlesAdapter(new ChangeNoteEvent(-1, ChangeNoteTypes.DELETE));
+                }
+            });
+
         }
 
         return super.onContextItemSelected(item);
