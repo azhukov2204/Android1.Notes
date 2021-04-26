@@ -11,18 +11,22 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.RecyclerView;
 
 import ru.androidlearning.notes.R;
+import ru.androidlearning.notes.data.NoteEntry;
 import ru.androidlearning.notes.data.Notes;
 
 public class NoteTitlesAdapter extends RecyclerView.Adapter<NoteTitlesAdapter.ViewHolder> {
 
-    private final Notes notes;
+    private Notes notes;
     private OnItemClickListener onItemClickListener;
     private final Fragment fragment;
     private int menuPosition;
 
-    public NoteTitlesAdapter(Notes notes, Fragment fragment) {
-        this.notes = notes;
+    public NoteTitlesAdapter(Fragment fragment) {
         this.fragment = fragment;
+    }
+
+    public void setNotes(Notes notes) {
+        this.notes = notes;
     }
 
     @NonNull
@@ -90,13 +94,10 @@ public class NoteTitlesAdapter extends RecyclerView.Adapter<NoteTitlesAdapter.Vi
             }
         }
 
-        public void setData(Notes.NoteEntry noteEntry) {
+        public void setData(NoteEntry noteEntry) {
             noteTitle.setText(noteEntry.getNoteTitle());
             noteDate.setText(noteEntry.getNoteCreatedDate());
             noteDetails.setText(noteEntry.getNoteText());
         }
-
-
     }
-
 }

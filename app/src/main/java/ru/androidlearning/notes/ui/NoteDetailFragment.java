@@ -11,6 +11,7 @@ import androidx.fragment.app.FragmentManager;
 
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -29,16 +30,17 @@ import java.util.Locale;
 import java.util.Objects;
 
 import ru.androidlearning.notes.R;
-import ru.androidlearning.notes.data.ChangeNoteTypes;
-import ru.androidlearning.notes.data.DeleteNoteInLandscapeEvent;
-import ru.androidlearning.notes.data.SingleObjectsGetter;
-import ru.androidlearning.notes.data.ChangeNoteEvent;
+import ru.androidlearning.notes.bus_events.ChangeNoteTypes;
+import ru.androidlearning.notes.bus_events.DeleteNoteInLandscapeEvent;
+import ru.androidlearning.notes.common.SingleObjectsGetter;
+import ru.androidlearning.notes.bus_events.ChangeNoteEvent;
 
 public class NoteDetailFragment extends Fragment {
 
     private int currentIndexOfNote;
     private static final String BUNDLE_PARAM_KEY = "NoteIndex";
     private boolean isDeleting = false;
+    private static final String LOG_TAG = "[NoteDetailFragment]";
 
     public static NoteDetailFragment newInstance(int indexOfNote) {
         NoteDetailFragment fragment = new NoteDetailFragment();
@@ -93,6 +95,13 @@ public class NoteDetailFragment extends Fragment {
         return super.onOptionsItemSelected(item);
     }
 
+    private void saveCurrentInstanceState() {
+        if (getArguments() != null) {
+            getArguments().putInt(BUNDLE_PARAM_KEY, currentIndexOfNote);
+        }
+    }
+
+
     @Override
     public void onPause() {
         if (!isDeleting) {
@@ -142,13 +151,6 @@ public class NoteDetailFragment extends Fragment {
         });
     }
 
-    private void saveAndCloseButtonAction() {
-        saveNoteChanges();
-        if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
-            Objects.requireNonNull(getActivity()).onBackPressed();
-        }
-    }
-
     private void setDateFromDatePicker(TextView noteDate) {
         final Calendar c = Calendar.getInstance();
         int mYear = c.get(Calendar.YEAR);
@@ -173,6 +175,7 @@ public class NoteDetailFragment extends Fragment {
                 String oldDate = SingleObjectsGetter.getNotes().getNoteFormattedCreatedDateAsStringByIndex(currentIndexOfNote);
 
                 SingleObjectsGetter.getNotes().updateNoteByIndex(currentIndexOfNote, noteTitle.getText().toString(), noteText.getText().toString(), noteDate.getText().toString());
+                Log.d(LOG_TAG, "Editing of current note id " + currentIndexOfNote);
 
                 if (!oldTitle.equals(noteTitle.getText().toString()) || !oldText.equals(noteText.getText().toString()) || !oldDate.equals(noteDate.getText().toString())) { //если есть изменения
                     SingleObjectsGetter.getBus().post(new ChangeNoteEvent(currentIndexOfNote, ChangeNoteTypes.UPDATE));
@@ -184,7 +187,9 @@ public class NoteDetailFragment extends Fragment {
                 } else {
                     SingleObjectsGetter.getNotes().addNote(noteTitle.getText().toString(), noteText.getText().toString(), noteDate.getText().toString());
                     currentIndexOfNote = SingleObjectsGetter.getNotes().getAllNotesTitles().size() - 1;
+                    Log.d(LOG_TAG, "Saving a new note, currentIndexOfNote = " + currentIndexOfNote);
                     SingleObjectsGetter.getBus().post(new ChangeNoteEvent(currentIndexOfNote, ChangeNoteTypes.INSERT));
+                    saveCurrentInstanceState();
                 }
             }
         }
@@ -207,7 +212,7 @@ public class NoteDetailFragment extends Fragment {
     }
 
     @Subscribe
-    public void deleteCurrentNoteFromBus(DeleteNoteInLandscapeEvent e) {
+    public void deleteCurrentNoteViaBus(DeleteNoteInLandscapeEvent e) {
         if (getActivity() != null) {
             deleteCurrentNote();
         }

@@ -35,10 +35,12 @@ import java.util.Objects;
 
 import ru.androidlearning.notes.MainActivity;
 import ru.androidlearning.notes.R;
-import ru.androidlearning.notes.data.ChangeNoteTypes;
-import ru.androidlearning.notes.data.DeleteNoteInLandscapeEvent;
-import ru.androidlearning.notes.data.SingleObjectsGetter;
-import ru.androidlearning.notes.data.ChangeNoteEvent;
+import ru.androidlearning.notes.bus_events.ChangeNoteTypes;
+import ru.androidlearning.notes.bus_events.DeleteNoteInLandscapeEvent;
+import ru.androidlearning.notes.common.SingleObjectsGetter;
+import ru.androidlearning.notes.bus_events.ChangeNoteEvent;
+import ru.androidlearning.notes.data.Notes;
+import ru.androidlearning.notes.data.NotesResponse;
 
 
 public class NoteTitlesFragment extends Fragment {
@@ -55,6 +57,12 @@ public class NoteTitlesFragment extends Fragment {
     private FloatingActionButton addNewNoteFAB;
 
     public static final String TITLES_LIST_BACKSTACK_NAME = "TitlesFragment";
+
+    public NoteTitlesFragment() {
+        Bundle args = new Bundle();
+        args.putInt(BUNDLE_PARAM_KEY, currentIndexOfNote);
+        setArguments(args);
+    }
 
     @Override
     public void onAttach(@NonNull Context context) {
@@ -95,8 +103,8 @@ public class NoteTitlesFragment extends Fragment {
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        if (savedInstanceState != null) {
-            currentIndexOfNote = savedInstanceState.getInt(BUNDLE_PARAM_KEY);
+        if (getArguments() != null) {
+            currentIndexOfNote = getArguments().getInt(BUNDLE_PARAM_KEY);
         } else {
             currentIndexOfNote = -1;
         }
@@ -109,8 +117,14 @@ public class NoteTitlesFragment extends Fragment {
 
     @Override
     public void onSaveInstanceState(@NonNull Bundle outState) {
-        outState.putInt(BUNDLE_PARAM_KEY, currentIndexOfNote);
+        saveCurrentInstanceState();
         super.onSaveInstanceState(outState);
+    }
+
+    private void saveCurrentInstanceState() {
+        if (getArguments() != null) {
+            getArguments().putInt(BUNDLE_PARAM_KEY, currentIndexOfNote);
+        }
     }
 
     @Override
@@ -126,8 +140,7 @@ public class NoteTitlesFragment extends Fragment {
         }
 
         if (currentIndexOfNote >= 0) {
-            //без этой задержки прокрутка может нормально не отработать при извлечении фрагмента из стека:
-            new Handler(Looper.getMainLooper()).postDelayed(() -> noteTitlesListRV.smoothScrollToPosition(currentIndexOfNote), 100);
+            noteTitlesListRV.smoothScrollToPosition(currentIndexOfNote);
         }
     }
 
@@ -183,8 +196,10 @@ public class NoteTitlesFragment extends Fragment {
         //noteTitlesListRV.setHasFixedSize(true);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
         noteTitlesListRV.setLayoutManager(linearLayoutManager);
-        noteTitlesAdapter = new NoteTitlesAdapter(SingleObjectsGetter.getNotes(true), this);
+        noteTitlesAdapter = new NoteTitlesAdapter(this);
         noteTitlesListRV.setAdapter(noteTitlesAdapter);
+        SingleObjectsGetter.getNotes().initNotes(notes -> noteTitlesAdapter.notifyDataSetChanged()); //При инициализации происходит считывание данных из Firestore
+        noteTitlesAdapter.setNotes(SingleObjectsGetter.getNotes());
 
         DividerItemDecoration itemDecoration = new DividerItemDecoration(Objects.requireNonNull(getContext()), LinearLayoutManager.VERTICAL);
 
@@ -211,6 +226,8 @@ public class NoteTitlesFragment extends Fragment {
             noteDetailFragment = NoteDetailFragment.newInstance(currentIndexOfNote);
         }
 
+        saveCurrentInstanceState();
+
         FragmentManager fragmentManager = requireActivity().getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
         fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_NONE);
@@ -233,7 +250,7 @@ public class NoteTitlesFragment extends Fragment {
     }
 
     @Subscribe
-    public void refreshNoteTitlesListFromBus(ChangeNoteEvent e) {
+    public void refreshNoteTitlesListViaBus(ChangeNoteEvent e) {
         needNotifyTitlesAdapter = true;
         changeNoteEvent = e;
 
@@ -243,6 +260,8 @@ public class NoteTitlesFragment extends Fragment {
                 needNotifyTitlesAdapter = false;
             }
         }
+        currentIndexOfNote = e.getNewIndexOfNote();
+        saveCurrentInstanceState();
     }
 
     private void notifyNoteTitlesAdapter(ChangeNoteEvent e) {
@@ -259,9 +278,8 @@ public class NoteTitlesFragment extends Fragment {
                 break;
         }
         if (e.getNewIndexOfNote() >= 0) {
-            noteTitlesListRV.smoothScrollToPosition(e.getNewIndexOfNote());
+            new Handler(Looper.getMainLooper()).postDelayed(() -> noteTitlesListRV.smoothScrollToPosition(currentIndexOfNote), 100);
         }
-        currentIndexOfNote = e.getNewIndexOfNote();
     }
 
 
