@@ -17,7 +17,10 @@ import android.util.Log;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
+
+import java.util.Objects;
 
 import ru.androidlearning.notes.ui.AboutFragment;
 import ru.androidlearning.notes.ui.NoteTitlesFragment;
@@ -27,16 +30,19 @@ public class MainActivity extends AppCompatActivity {
 
     private final static String IS_HIDDEN_NOTE_DETAIL_CONTAINER_BUNDLE_KEY = "isHiddenNoteDetailContainer";
     private static boolean isHiddenNoteDetailContainer = false;
+    FloatingActionButton addNewNoteFAB;
+    private ActionBarDrawerToggle actionBarDrawerToggle;
+    private DrawerLayout drawerLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        initViews();
         checkInstanceStateAndHideOrShowNoteDetailFragmentContainer(savedInstanceState);
         openNoteTitlesFragmentAtFirstRun(savedInstanceState);
         removeUnnecessaryNoteDetailFragment(); //при смене ориентации на портретную надо удалить фрагмент из noteDetailFragmentContainer, иначе в ToolBar останется его меню
-        initView();
     }
 
     @Override
@@ -78,7 +84,8 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private void initView() {
+    private void initViews() {
+        addNewNoteFAB = findViewById(R.id.add_new_note_fab);
         Toolbar toolbar = initToolbar();
         initDrawer(toolbar);
     }
@@ -90,24 +97,38 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void initDrawer(Toolbar toolbar) {
-        final DrawerLayout drawer = findViewById(R.id.drawer_layout);
-        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
-                this, drawer, toolbar,
+        drawerLayout = findViewById(R.id.drawer_layout);
+        actionBarDrawerToggle = new ActionBarDrawerToggle(
+                this, drawerLayout, toolbar,
                 R.string.navigation_drawer_open,
                 R.string.navigation_drawer_close);
-        drawer.addDrawerListener(toggle);
-        toggle.syncState();
+        drawerLayout.addDrawerListener(actionBarDrawerToggle);
+        actionBarDrawerToggle.syncState();
 
         // Обработка навигационного меню
         NavigationView navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(item -> {
             int id = item.getItemId();
             if (navigateFragment(id)) {
-                drawer.closeDrawer(GravityCompat.START);
+                drawerLayout.closeDrawer(GravityCompat.START);
                 return true;
             }
             return false;
         });
+    }
+
+    public void showHomeButtonOnToolbar() {
+        drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
+        actionBarDrawerToggle.setDrawerIndicatorEnabled(false);
+        Objects.requireNonNull(getSupportActionBar()).setDisplayHomeAsUpEnabled(true);
+        actionBarDrawerToggle.setToolbarNavigationClickListener(v -> onBackPressed());
+    }
+
+    public void showBurgerButtonOnToolbar() {
+        drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED);
+        Objects.requireNonNull(getSupportActionBar()).setDisplayHomeAsUpEnabled(false);
+        actionBarDrawerToggle.setDrawerIndicatorEnabled(true);
+        actionBarDrawerToggle.setToolbarNavigationClickListener(null);
     }
 
     @SuppressLint("NonConstantResourceId")
@@ -127,6 +148,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void openSettingsFragment() {
+        addNewNoteFAB.hide();
         clearBackStack();
         hideNoteDetailFragmentContainerInLandscape();
         Fragment settingsFragment = new SettingsFragment();
@@ -134,6 +156,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void openAboutFragment() {
+        addNewNoteFAB.hide();
         clearBackStack();
         hideNoteDetailFragmentContainerInLandscape();
         Fragment aboutFragment = new AboutFragment();
@@ -141,6 +164,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void openNotesFragment() {
+        addNewNoteFAB.show();
         showNoteDetailFragmentContainerInLandscape();
         NoteTitlesFragment noteTitlesFragment = new NoteTitlesFragment();
         runFragment(noteTitlesFragment);

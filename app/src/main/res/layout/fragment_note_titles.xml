@@ -15,10 +15,4 @@
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
         tools:listitem="@layout/note_title_item" />
 
-    <Button
-        android:id="@+id/createNewNoteButton"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/createNewNoteButtonText" />
-
 </LinearLayout>

@@ -9,7 +9,8 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 
-import android.util.Log;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -21,13 +22,17 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.squareup.otto.Subscribe;
+
 import java.util.Calendar;
 import java.util.Locale;
 import java.util.Objects;
 
 import ru.androidlearning.notes.R;
+import ru.androidlearning.notes.data.ChangeNoteTypes;
+import ru.androidlearning.notes.data.DeleteNoteInLandscapeEvent;
 import ru.androidlearning.notes.data.SingleObjectsGetter;
-import ru.androidlearning.notes.types.EventUpdateNoteTitles;
+import ru.androidlearning.notes.data.ChangeNoteEvent;
 
 public class NoteDetailFragment extends Fragment {
 
@@ -50,6 +55,12 @@ public class NoteDetailFragment extends Fragment {
             currentIndexOfNote = getArguments().getInt(BUNDLE_PARAM_KEY);
         }
         SingleObjectsGetter.getBus().register(this);
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        SingleObjectsGetter.getBus().unregister(this);
     }
 
     @Override
@@ -108,8 +119,27 @@ public class NoteDetailFragment extends Fragment {
             noteDate.setText(String.format(Locale.US, "%02d.%02d.%04d", calendar.get(Calendar.DAY_OF_MONTH), calendar.get(Calendar.MONTH) + 1, calendar.get(Calendar.YEAR)));
         }
 
-        noteEditTextFragment.findViewById(R.id.saveAndCloseButton).setOnClickListener(v -> saveAndCloseButtonAction());
+        addTListenerForSaveNoteChanges(noteDate);
+        addTListenerForSaveNoteChanges(noteText);
+        addTListenerForSaveNoteChanges(noteTitle);
         noteDate.setOnClickListener(v -> setDateFromDatePicker(noteDate));
+    }
+
+    private void addTListenerForSaveNoteChanges(TextView textView) {
+        textView.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                saveNoteChanges();
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+            }
+        });
     }
 
     private void saveAndCloseButtonAction() {
@@ -139,11 +169,13 @@ public class NoteDetailFragment extends Fragment {
             if (currentIndexOfNote >= 0) {
                 //Редактирование существующей заметки
                 String oldTitle = SingleObjectsGetter.getNotes().getNoteTitleByIndex(currentIndexOfNote);
+                String oldText = SingleObjectsGetter.getNotes().getNoteTextByIndex(currentIndexOfNote);
+                String oldDate = SingleObjectsGetter.getNotes().getNoteFormattedCreatedDateAsStringByIndex(currentIndexOfNote);
+
                 SingleObjectsGetter.getNotes().updateNoteByIndex(currentIndexOfNote, noteTitle.getText().toString(), noteText.getText().toString(), noteDate.getText().toString());
 
-                if (!oldTitle.equals(noteTitle.getText().toString())) { //если заголовок изменился - тоже делаем обновление списка
-                    SingleObjectsGetter.getBus().post(new EventUpdateNoteTitles(currentIndexOfNote));
-                    Log.d("currentIndexOfNote", "currentIndexOfNote in NoteDetailFragment: " + currentIndexOfNote);
+                if (!oldTitle.equals(noteTitle.getText().toString()) || !oldText.equals(noteText.getText().toString()) || !oldDate.equals(noteDate.getText().toString())) { //если есть изменения
+                    SingleObjectsGetter.getBus().post(new ChangeNoteEvent(currentIndexOfNote, ChangeNoteTypes.UPDATE));
                 }
             } else {
                 //Создание новой заметки:
@@ -152,8 +184,7 @@ public class NoteDetailFragment extends Fragment {
                 } else {
                     SingleObjectsGetter.getNotes().addNote(noteTitle.getText().toString(), noteText.getText().toString(), noteDate.getText().toString());
                     currentIndexOfNote = SingleObjectsGetter.getNotes().getAllNotesTitles().size() - 1;
-                    SingleObjectsGetter.getBus().post(new EventUpdateNoteTitles(currentIndexOfNote));
-                    Log.d("currentIndexOfNote", "currentIndexOfNote in NoteDetailFragment: " + currentIndexOfNote);
+                    SingleObjectsGetter.getBus().post(new ChangeNoteEvent(currentIndexOfNote, ChangeNoteTypes.INSERT));
                 }
             }
         }
@@ -169,9 +200,16 @@ public class NoteDetailFragment extends Fragment {
                 FragmentManager fragmentManager = requireActivity().getSupportFragmentManager();
                 fragmentManager.beginTransaction().remove(this).commit();
             }
-            SingleObjectsGetter.getBus().post(new EventUpdateNoteTitles(-1));
+            SingleObjectsGetter.getBus().post(new ChangeNoteEvent(-1, ChangeNoteTypes.DELETE));
         } else {
             Toast.makeText(getContext(), "Nothing to delete...", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    @Subscribe
+    public void deleteCurrentNoteFromBus(DeleteNoteInLandscapeEvent e) {
+        if (getActivity() != null) {
+            deleteCurrentNote();
         }
     }
 

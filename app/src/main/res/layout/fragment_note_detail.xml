@@ -7,14 +7,14 @@
     android:background="@color/white"
     tools:context=".ui.NoteDetailFragment">
 
-
     <TextView
         android:id="@+id/noteDate"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginEnd="@dimen/noteDetailFragmentDefaultMargin"
-        android:gravity="start"
+        android:gravity="end"
         android:text=""
+        android:textColor="@color/black"
         android:textSize="@dimen/noteDetailFragmentDateTextSize" />
 
     <EditText
@@ -49,10 +49,4 @@
             android:textSize="@dimen/noteDetailFragmentTextSize" />
     </ScrollView>
 
-
-    <Button
-        android:id="@+id/saveAndCloseButton"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/saveAndCloseButtonText" />
 </LinearLayout>
