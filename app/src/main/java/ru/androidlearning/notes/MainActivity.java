@@ -31,17 +31,12 @@ import com.vk.api.sdk.auth.VKAccessToken;
 import com.vk.api.sdk.auth.VKAuthCallback;
 import com.vk.sdk.api.account.AccountService;
 import com.vk.sdk.api.account.dto.AccountUserSettings;
-import com.vk.sdk.api.base.dto.BaseUploadServer;
-import com.vk.sdk.api.friends.FriendsService;
-import com.vk.sdk.api.photos.PhotosService;
 import com.vk.sdk.api.users.UsersService;
 import com.vk.sdk.api.users.dto.UsersFields;
 import com.vk.sdk.api.users.dto.UsersUserXtrCounters;
 
 import org.jetbrains.annotations.NotNull;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
@@ -66,7 +61,7 @@ public class MainActivity extends AppCompatActivity {
     private DrawerLayout drawerLayout;
     private UserData userData = new UserData();
     private TextView userLoginTextView;
-    private TextView userMailView;
+    private TextView userIdView;
     private ImageView userAvatarImageView;
 
     @Override
@@ -113,10 +108,10 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+        //данная логика отрабатывает при авторизации через VK:
         VKAuthCallback callback = new VKAuthCallback() {
             @Override
             public void onLogin(@NotNull VKAccessToken vkAccessToken) {
-                //userData.setUserEmail(vkAccessToken.getEmail());
                 startNotesWithAuthDataVK();
             }
 
@@ -125,7 +120,6 @@ public class MainActivity extends AppCompatActivity {
                 Log.w(LOG_TAG, "VKSignInResult:failed code= " + i);
             }
         };
-
         if (data == null || !VK.onActivityResult(requestCode, resultCode, data, callback)) {
             super.onActivityResult(requestCode, resultCode, data);
         }
@@ -135,17 +129,20 @@ public class MainActivity extends AppCompatActivity {
         VK.execute(new AccountService().accountGetProfileInfo(), new VKApiCallback<AccountUserSettings>() {
             @Override
             public void success(AccountUserSettings accountUserSettings) {
-                userData.setUserID("VK" + accountUserSettings.getId());
-                userData.setUserName(accountUserSettings.getFirstName() + " " + accountUserSettings.getLastName());
-                isAuthenticationDone = true;
+                final String userID = "VK" + accountUserSettings.getId();
+                final String userName = accountUserSettings.getFirstName() + " " + accountUserSettings.getLastName();
+                //userData.setUserID("VK" + accountUserSettings.getId());
+                //userData.setUserName(accountUserSettings.getFirstName() + " " + accountUserSettings.getLastName());
+                //isAuthenticationDone = true;
                 List<UsersFields> usersFields = Collections.singletonList(UsersFields.PHOTO_100);
                 VK.execute(new UsersService().usersGet(null, usersFields, null), new VKApiCallback<List<UsersUserXtrCounters>>() {
                     @Override
                     public void success(List<UsersUserXtrCounters> usersUserXtrCounters) {
                         for (UsersUserXtrCounters usersUserXtrCounter : usersUserXtrCounters) {
-                            userData.setUserAvatarUri(Uri.parse(usersUserXtrCounter.getPhoto100()));
-                            Log.d(LOG_TAG, usersUserXtrCounter.getPhoto100());
-                            setUserDataToNavHeader();
+                            Uri userAvatarUri = Uri.parse(usersUserXtrCounter.getPhoto100());
+                            setUserData(true, userID, userName, userAvatarUri);
+                            //userData.setUserAvatarUri(Uri.parse(usersUserXtrCounter.getPhoto100()));
+                            //setUserDataToNavHeader();
                             openNotesFragment();
                         }
                     }
@@ -224,7 +221,7 @@ public class MainActivity extends AppCompatActivity {
         });
 
         userLoginTextView = navigationView.getHeaderView(0).findViewById(R.id.userLoginTextView);
-        userMailView = navigationView.getHeaderView(0).findViewById(R.id.userMailTextView);
+        userIdView = navigationView.getHeaderView(0).findViewById(R.id.userIdTextView);
         userAvatarImageView = navigationView.getHeaderView(0).findViewById(R.id.userAvatarImageView);
     }
 
@@ -284,7 +281,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void openNotesFragment() {
-        Log.d(LOG_TAG, userData.getUserName() + " " + userData.getUserEmail());
         addNewNoteFAB.show();
         showNoteDetailFragmentContainerInLandscape();
         NoteTitlesFragment noteTitlesFragment = new NoteTitlesFragment();
@@ -297,7 +293,7 @@ public class MainActivity extends AppCompatActivity {
         clearBackStack();
         hideNoteDetailFragmentContainerInLandscape();
         if (isSignOutRequired) {
-            setUserData(false, "", "", "", null);
+            setUserData(false, "", "", null);
         }
         Fragment authFragment = AuthFragment.newInstance(isSignOutRequired);
         runFragment(authFragment);
@@ -339,18 +335,17 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    public void setUserData(boolean isAuthenticationDone, String userId, String userName, String userEmail, Uri userAvatarUri) {
+    public void setUserData(boolean isAuthenticationDone, String userId, String userName, Uri userAvatarUri) {
         this.isAuthenticationDone = isAuthenticationDone;
         userData.setUserID(userId);
         userData.setUserName(userName);
-        userData.setUserEmail(userEmail);
         userData.setUserAvatarUri(userAvatarUri);
         setUserDataToNavHeader();
     }
 
     private void setUserDataToNavHeader() {
         userLoginTextView.setText(userData.getUserName());
-        userMailView.setText(userData.getUserEmail());
+        userIdView.setText(userData.getUserID());
         userAvatarImageView.setImageURI(null);
         if (userData.getUserAvatarUri() != null) {
             Picasso.get().load(userData.getUserAvatarUri()).into(userAvatarImageView);

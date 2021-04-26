@@ -9,20 +9,17 @@ import ru.androidlearning.notes.R;
 public class UserData implements Parcelable {
     private String userID;
     private String userName;
-    private String userEmail;
     private Uri userAvatarUri;
 
     public UserData() {
         userID = "";
         userName = "";
-        userEmail = "";
         userAvatarUri = null;
     }
 
     protected UserData(Parcel in) {
         userID = in.readString();
         userName = in.readString();
-        userEmail = in.readString();
         userAvatarUri = Uri.parse(in.readString());
     }
 
@@ -53,9 +50,7 @@ public class UserData implements Parcelable {
         if (userName == null) {
             userName = "";
         }
-        if (userEmail == null) {
-            userEmail = "";
-        }
+
         if (userAvatarUri == null) {
             userAvatarUriString = "";
         } else {
@@ -63,7 +58,6 @@ public class UserData implements Parcelable {
         }
         dest.writeString(userID);
         dest.writeString(userName);
-        dest.writeString(userEmail);
         dest.writeString(userAvatarUriString);
     }
 
@@ -81,14 +75,6 @@ public class UserData implements Parcelable {
 
     public void setUserName(String userName) {
         this.userName = userName;
-    }
-
-    public String getUserEmail() {
-        return userEmail;
-    }
-
-    public void setUserEmail(String userEmail) {
-        this.userEmail = userEmail;
     }
 
     public void setUserAvatarUri(Uri userAvatarUri) {

@@ -16,7 +16,7 @@
         android:layout_gravity="center|top"/>
 
     <androidx.appcompat.widget.LinearLayoutCompat
-        android:layout_width="wrap_content"
+        android:layout_width="180dp"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:orientation="vertical">
@@ -26,17 +26,16 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
 
-        <Button
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/vkSignIn"
+            style="@style/VKButton"
             android:layout_width="match_parent"
+            android:layout_margin="4dp"
             android:layout_height="wrap_content"
             android:layout_gravity="top|center"
-            android:background="@color/vk"
-            android:layout_margin="4dp"
             android:text="@string/signInWithVKButtonText"
             android:textColor="#ffffffff" />
 
     </androidx.appcompat.widget.LinearLayoutCompat>
-
 
 </FrameLayout>

@@ -109,7 +109,6 @@ public class AuthFragment extends Fragment {
                 mainActivity.startNotesWithAuthDataVK();
             }
         }
-
     }
 
     private void signInWithGoogle() {
@@ -141,7 +140,7 @@ public class AuthFragment extends Fragment {
 
 
     private void startNotesWithAuthData(GoogleSignInAccount googleSignInAccount) {
-        mainActivity.setUserData(true, googleSignInAccount.getEmail(), googleSignInAccount.getDisplayName(), googleSignInAccount.getEmail(), googleSignInAccount.getPhotoUrl());
+        mainActivity.setUserData(true, googleSignInAccount.getEmail(), googleSignInAccount.getDisplayName(), googleSignInAccount.getPhotoUrl());
         mainActivity.openNotesFragment();
     }
 }

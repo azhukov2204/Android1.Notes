@@ -7,12 +7,18 @@
     android:orientation="vertical"
     tools:context=".ui.NoteTitlesFragment">
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/noteTitlesLayout"
+    <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-        tools:listitem="@layout/note_title_item" />
+        android:layout_height="wrap_content"
+        android:scrollbars="vertical">
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/noteTitlesLayout"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+            tools:listitem="@layout/note_card_item" />
+    </androidx.core.widget.NestedScrollView>
+
 
 </LinearLayout>
