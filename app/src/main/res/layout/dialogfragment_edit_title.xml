@@ -12,7 +12,7 @@
         android:hint="@string/enterNoteTitleHint"
         android:inputType="textShortMessage"
         android:textColor="@color/black"
-        android:textSize="20sp"
+        android:textSize="@dimen/dialogFragmentEditTextSize"
         android:textStyle="bold" />
 
     <LinearLayout
@@ -26,7 +26,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="0.5"
             android:text="@string/declineButtonText"
-            android:textSize="15sp" />
+            android:textSize="@dimen/dialogFragmentButtonTextSize" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/editTitleConfirmButton"
@@ -34,7 +34,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="0.5"
             android:text="@string/confirmButtonText"
-            android:textSize="15sp" />
+            android:textSize="@dimen/dialogFragmentButtonTextSize" />
     </LinearLayout>
 
 
