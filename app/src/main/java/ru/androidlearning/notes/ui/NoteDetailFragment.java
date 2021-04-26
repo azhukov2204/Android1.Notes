@@ -33,6 +33,7 @@ import ru.androidlearning.notes.R;
 import ru.androidlearning.notes.bus_events.ChangeNoteTypes;
 import ru.androidlearning.notes.bus_events.DeleteNoteInLandscapeEvent;
 import ru.androidlearning.notes.common.ConfirmDeletingAlertDialog;
+import ru.androidlearning.notes.common.EnterNoteTitleDialog;
 import ru.androidlearning.notes.common.SingleObjectsGetter;
 import ru.androidlearning.notes.bus_events.ChangeNoteEvent;
 
@@ -133,6 +134,11 @@ public class NoteDetailFragment extends Fragment {
         addTListenerForSaveNoteChanges(noteText);
         addTListenerForSaveNoteChanges(noteTitle);
         noteDate.setOnClickListener(v -> setDateFromDatePicker(noteDate));
+
+        noteTitle.setOnClickListener(v -> {
+            EnterNoteTitleDialog enterNoteTitleDialog = new EnterNoteTitleDialog(noteTitle);
+            enterNoteTitleDialog.show(getFragmentManager(), "EnterNoteTitleDialog");
+        });
     }
 
     private void addTListenerForSaveNoteChanges(TextView textView) {
@@ -164,7 +170,7 @@ public class NoteDetailFragment extends Fragment {
     }
 
     private void saveNoteChanges() {
-        EditText noteTitle = Objects.requireNonNull(getActivity()).findViewById(R.id.noteTitle);
+        TextView noteTitle = Objects.requireNonNull(getActivity()).findViewById(R.id.noteTitle);
         EditText noteText = Objects.requireNonNull(getActivity()).findViewById(R.id.noteText);
         TextView noteDate = Objects.requireNonNull(getActivity()).findViewById(R.id.noteDate);
 
