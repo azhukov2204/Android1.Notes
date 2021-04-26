@@ -90,7 +90,7 @@ public class NoteTitlesFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_note_titles, container, false);
         noteTitlesListRV = view.findViewById(R.id.noteTitlesLayout);
         initNoteTitlesListRV(noteTitlesListRV);
-        initAddNewNoteButtons(view);
+        initAddNewNoteButtons();
 
         DefaultItemAnimator animator = new DefaultItemAnimator();
         animator.setAddDuration(MY_DEFAULT_DURATION);
@@ -214,7 +214,7 @@ public class NoteTitlesFragment extends Fragment {
 
     }
 
-    private void initAddNewNoteButtons(View view) {
+    private void initAddNewNoteButtons() {
         addNewNoteFAB = requireActivity().findViewById(R.id.add_new_note_fab);
         addNewNoteFAB.setOnClickListener(v -> openNoteDetailFragment(true));
     }
