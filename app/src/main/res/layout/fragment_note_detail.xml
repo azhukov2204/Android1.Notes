@@ -26,6 +26,7 @@
         android:hint="@string/enterNoteTitleHint"
         android:inputType="textShortMessage"
         android:text=""
+        android:textColor="@color/black"
         android:textSize="@dimen/noteDetailFragmentTitleTextSize"
         android:textStyle="bold" />
 
@@ -45,6 +46,7 @@
             android:autofillHints=""
             android:hint="@string/enterNoteTextHint"
             android:inputType="none"
+            android:textColor="@color/black"
             android:text=""
             android:textSize="@dimen/noteDetailFragmentTextSize" />
     </ScrollView>
