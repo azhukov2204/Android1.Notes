@@ -1,30 +1,26 @@
 package ru.androidlearning.notes.common;
 
 import android.annotation.SuppressLint;
-import android.content.Context;
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
-import androidx.fragment.app.FragmentManager;
 
 import ru.androidlearning.notes.R;
 
-import static androidx.core.content.ContextCompat.getSystemService;
+public class EditNoteTitleDialog extends DialogFragment {
 
-public class EnterNoteTitleDialog extends DialogFragment {
-
-    private EditText enterTitleEditText;
+    private EditText editTitleEditText;
     private final TextView targetTextView;
 
-    public EnterNoteTitleDialog(TextView targetTextView) {
+    public EditNoteTitleDialog(TextView targetTextView) {
         this.targetTextView = targetTextView;
     }
 
@@ -32,19 +28,18 @@ public class EnterNoteTitleDialog extends DialogFragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         @SuppressLint("InflateParams") View view = inflater.inflate(R.layout.dialogfragment_edit_title, null);
-        enterTitleEditText = view.findViewById(R.id.editTitle);
+        editTitleEditText = view.findViewById(R.id.editTitle);
 
         view.findViewById(R.id.editTitleCancelButton).setOnClickListener(v -> dismiss());
 
         view.findViewById(R.id.editTitleConfirmButton).setOnClickListener(v -> {
-            targetTextView.setText(enterTitleEditText.getText());
+            targetTextView.setText(editTitleEditText.getText());
             dismiss();
         });
 
         setCancelable(false);
-
         String text = targetTextView.getText().toString();
-        enterTitleEditText.setText(text);
+        editTitleEditText.setText(text);
 
         return view;
     }
@@ -55,4 +50,9 @@ public class EnterNoteTitleDialog extends DialogFragment {
         getDialog().getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
     }
 
+    @Override
+    public void onPause() {
+        dismiss(); //такой "костыль", чтоб не было падения при смене ориентации. Т.к. в конструктор подается вьюха, которая уничтожается при смене ориентации. Все равно планирую отказаться от этого диалога
+        super.onPause();
+    }
 }

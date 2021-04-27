@@ -33,7 +33,7 @@ import ru.androidlearning.notes.R;
 import ru.androidlearning.notes.bus_events.ChangeNoteTypes;
 import ru.androidlearning.notes.bus_events.DeleteNoteInLandscapeEvent;
 import ru.androidlearning.notes.common.ConfirmDeletingAlertDialog;
-import ru.androidlearning.notes.common.EnterNoteTitleDialog;
+import ru.androidlearning.notes.common.EditNoteTitleDialog;
 import ru.androidlearning.notes.common.SingleObjectsGetter;
 import ru.androidlearning.notes.bus_events.ChangeNoteEvent;
 
@@ -136,8 +136,8 @@ public class NoteDetailFragment extends Fragment {
         noteDate.setOnClickListener(v -> setDateFromDatePicker(noteDate));
 
         noteTitle.setOnClickListener(v -> {
-            EnterNoteTitleDialog enterNoteTitleDialog = new EnterNoteTitleDialog(noteTitle);
-            enterNoteTitleDialog.show(getFragmentManager(), "EnterNoteTitleDialog");
+            EditNoteTitleDialog editNoteTitleDialog = new EditNoteTitleDialog(noteTitle);
+            editNoteTitleDialog.show(getFragmentManager(), "EnterNoteTitleDialog");
         });
     }
 
