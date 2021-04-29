@@ -82,11 +82,12 @@ public class NotesFirebaseImpl implements Notes {
 
     public void updateNoteByIndex(int index, String noteTitle, String noteText, String noteDate) {
         String firebaseId = notesListLocal.get(index).getFirebaseId();
-        notesListLocal.get(index).setNoteTitle(noteTitle);
-        notesListLocal.get(index).setNoteText(noteText);
-        notesListLocal.get(index).setNoteCreatedDate(noteDate);
         if (firebaseId != null && !firebaseId.isEmpty()) {
-            notesListFirestore.document(firebaseId).set(NotesDataMapping.toFirebaseDocument(new NoteEntry(noteTitle, noteText, noteDate)));
+            NoteEntry entry = notesListLocal.get(index);
+            entry.setNoteTitle(noteTitle);
+            entry.setNoteText(noteText);
+            entry.setNoteCreatedDate(noteDate);
+            notesListFirestore.document(firebaseId).set(NotesDataMapping.toFirebaseDocument(entry));
         }
     }
 

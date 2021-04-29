@@ -28,4 +28,9 @@
     <string name="logoutMenuItem">Logout</string>
     <string name="signInWithVKButtonText">SignIn With VK</string>
     <string name="pleaseAuthenticateMessage">Please authenticate</string>
+    <string name="confirmDeleteMessage">Please, confirm deleting</string>
+    <string name="attention">Attention</string>
+    <string name="confirmButtonText">Confirm</string>
+    <string name="declineButtonText">Decline</string>
+    <string name="deletionCanceledMessage">Deletion canceled </string>
 </resources>

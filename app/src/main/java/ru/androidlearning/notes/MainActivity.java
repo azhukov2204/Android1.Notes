@@ -265,17 +265,13 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void openSettingsFragment() {
-        addNewNoteFAB.hide();
-        clearBackStack();
-        hideNoteDetailFragmentContainerInLandscape();
+        hideFABAndNoteDetailFragmentContainer();
         Fragment settingsFragment = new SettingsFragment();
         runFragment(settingsFragment);
     }
 
     private void openAboutFragment() {
-        addNewNoteFAB.hide();
-        clearBackStack();
-        hideNoteDetailFragmentContainerInLandscape();
+        hideFABAndNoteDetailFragmentContainer();
         Fragment aboutFragment = new AboutFragment();
         runFragment(aboutFragment);
     }
@@ -289,14 +285,18 @@ public class MainActivity extends AppCompatActivity {
 
     private void openAuthFragment(boolean isSignOutRequired) {
         hideButtonsOnToolbar();
-        addNewNoteFAB.hide();
-        clearBackStack();
-        hideNoteDetailFragmentContainerInLandscape();
+        hideFABAndNoteDetailFragmentContainer();
         if (isSignOutRequired) {
             setUserData(false, "", "", null);
         }
         Fragment authFragment = AuthFragment.newInstance(isSignOutRequired);
         runFragment(authFragment);
+    }
+
+    private void hideFABAndNoteDetailFragmentContainer() {
+        addNewNoteFAB.hide();
+        clearBackStack();
+        hideNoteDetailFragmentContainerInLandscape();
     }
 
     private void runFragment(Fragment fragment) {
