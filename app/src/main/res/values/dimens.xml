@@ -19,4 +19,7 @@
     <dimen name="noteCardTitleTextSize">20sp</dimen>
     <dimen name="cardCornerRadiusSize">5dp</dimen>
     <dimen name="FAB_margin">16dp</dimen>
+    <dimen name="avatarImageSize">80dp</dimen>
+    <dimen name="dialogFragmentButtonTextSize">15sp</dimen>
+    <dimen name="dialogFragmentEditTextSize">20sp</dimen>
 </resources>

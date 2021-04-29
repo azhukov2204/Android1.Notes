@@ -9,10 +9,11 @@
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/noteTitlesLayout"
+        android:scrollbars="vertical"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-        tools:listitem="@layout/note_title_item" />
+        tools:listitem="@layout/note_card_item" />
 
 </LinearLayout>

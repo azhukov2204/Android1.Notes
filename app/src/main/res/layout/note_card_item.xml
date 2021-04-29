@@ -7,6 +7,7 @@
     android:layout_marginStart="@dimen/defaultCardItemMargin"
     android:focusable="true"
     android:clickable="true"
+    android:foreground="?android:selectableItemBackground"
     android:layout_marginTop="@dimen/defaultCardItemMargin"
     android:layout_marginEnd="@dimen/defaultCardItemMargin"
     app:cardCornerRadius="@dimen/cardCornerRadiusSize">

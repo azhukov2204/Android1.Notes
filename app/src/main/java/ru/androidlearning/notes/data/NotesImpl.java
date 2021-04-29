@@ -71,4 +71,9 @@ public class NotesImpl implements Notes {
         return allNoteTitles;
     }
 
+    @Override
+    public void setFirebaseCollectionName(String userEmail) {
+
+    }
+
 }

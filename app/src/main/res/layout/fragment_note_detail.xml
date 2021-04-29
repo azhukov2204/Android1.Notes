@@ -17,15 +17,15 @@
         android:textColor="@color/black"
         android:textSize="@dimen/noteDetailFragmentDateTextSize" />
 
-    <EditText
+    <TextView
         android:id="@+id/noteTitle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:autofillHints=""
         android:gravity="start"
         android:hint="@string/enterNoteTitleHint"
-        android:inputType="textShortMessage"
         android:text=""
+        android:textColor="@color/black"
         android:textSize="@dimen/noteDetailFragmentTitleTextSize"
         android:textStyle="bold" />
 
@@ -45,6 +45,7 @@
             android:autofillHints=""
             android:hint="@string/enterNoteTextHint"
             android:inputType="none"
+            android:textColor="@color/black"
             android:text=""
             android:textSize="@dimen/noteDetailFragmentTextSize" />
     </ScrollView>

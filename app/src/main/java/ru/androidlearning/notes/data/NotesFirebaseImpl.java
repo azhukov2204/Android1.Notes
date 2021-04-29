@@ -26,13 +26,17 @@ public class NotesFirebaseImpl implements Notes {
     private static final String NOTES_FIREBASE_COLLECTION = "notes";
     private static final String LOG_TAG = "[NotesFirebaseImpl]";
     private List<NoteEntry> notesListLocal;
-    private final CollectionReference notesListFirestore;
+    private CollectionReference notesListFirestore;
 
 
     public NotesFirebaseImpl() {
         notesListLocal = new ArrayList<>();
+    }
+
+    @Override
+    public void setFirebaseCollectionName(String firebaseCollectionName) {
         FirebaseFirestore firestoreDB = FirebaseFirestore.getInstance();
-        notesListFirestore = firestoreDB.collection(NOTES_FIREBASE_COLLECTION);
+        notesListFirestore = firestoreDB.collection(NOTES_FIREBASE_COLLECTION + ":" + firebaseCollectionName);
     }
 
     @Override
@@ -78,11 +82,12 @@ public class NotesFirebaseImpl implements Notes {
 
     public void updateNoteByIndex(int index, String noteTitle, String noteText, String noteDate) {
         String firebaseId = notesListLocal.get(index).getFirebaseId();
-        notesListLocal.get(index).setNoteTitle(noteTitle);
-        notesListLocal.get(index).setNoteText(noteText);
-        notesListLocal.get(index).setNoteCreatedDate(noteDate);
         if (firebaseId != null && !firebaseId.isEmpty()) {
-            notesListFirestore.document(firebaseId).set(NotesDataMapping.toFirebaseDocument(new NoteEntry(noteTitle, noteText, noteDate)));
+            NoteEntry entry = notesListLocal.get(index);
+            entry.setNoteTitle(noteTitle);
+            entry.setNoteText(noteText);
+            entry.setNoteCreatedDate(noteDate);
+            notesListFirestore.document(firebaseId).set(NotesDataMapping.toFirebaseDocument(entry));
         }
     }
 

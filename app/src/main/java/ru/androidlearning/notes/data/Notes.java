@@ -23,4 +23,6 @@ public interface Notes {
 
     List<String> getAllNotesTitles();
 
+    void setFirebaseCollectionName(String userEmail);
+
 }
