@@ -17,7 +17,7 @@
         android:textColor="@color/black"
         android:textSize="@dimen/noteDetailFragmentDateTextSize" />
 
-    <TextView
+    <EditText
         android:id="@+id/noteTitle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -27,7 +27,8 @@
         android:text=""
         android:textColor="@color/black"
         android:textSize="@dimen/noteDetailFragmentTitleTextSize"
-        android:textStyle="bold" />
+        android:textStyle="bold"
+        android:inputType="textShortMessage" />
 
     <ScrollView
         android:layout_width="match_parent"
