@@ -85,13 +85,12 @@ public class NoteDetailFragment extends Fragment {
     @SuppressLint("NonConstantResourceId")
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.action_delete:
-                deleteCurrentNote();
-                return true;
-            case R.id.action_forward:
+        if (item.getItemId() == R.id.action_delete) {
+            deleteCurrentNote();
+            return true;
+            /*case R.id.action_forward:
                 Toast.makeText(getContext(), "Forward will be implemented later...", Toast.LENGTH_SHORT).show();
-                return true;
+                return true;*/
         }
         return super.onOptionsItemSelected(item);
     }

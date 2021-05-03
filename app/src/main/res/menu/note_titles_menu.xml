@@ -1,20 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
-    <item
+<!--    <item
         android:id="@+id/action_search"
         android:icon="@android:drawable/ic_menu_search"
         android:orderInCategory="10"
         android:title="@string/search"
         app:actionViewClass="androidx.appcompat.widget.SearchView"
-        app:showAsAction="ifRoom" />
+        app:showAsAction="ifRoom" />-->
     <item
         android:id="@+id/action_add"
         android:icon="@android:drawable/ic_menu_add"
         android:orderInCategory="20"
         android:title="@string/addMenuItem"
         app:showAsAction="never" />
-    <item
+<!--    <item
         android:id="@+id/action_sorting"
         android:orderInCategory="30"
         android:title="@string/sortingMenuItem">
@@ -35,6 +35,5 @@
                     android:title="@string/sortByNameMenuItem" />
             </group>
         </menu>
-
-    </item>
+    </item>-->
 </menu>

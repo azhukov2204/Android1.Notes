@@ -151,10 +151,11 @@ public class NoteTitlesFragment extends Fragment {
         }
     }
 
+
     @Override
     public void onCreateOptionsMenu(@NonNull Menu menu, MenuInflater inflater) {
         inflater.inflate(R.menu.note_titles_menu, menu);
-        MenuItem search = menu.findItem(R.id.action_search);
+        /*MenuItem search = menu.findItem(R.id.action_search);
         SearchView searchText = (SearchView) search.getActionView();
         searchText.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             // реагирует на конец ввода поиска
@@ -170,17 +171,17 @@ public class NoteTitlesFragment extends Fragment {
                 Toast.makeText(getContext(), "Search will be implemented later: " + queryText, Toast.LENGTH_SHORT).show();
                 return true;
             }
-        });
+        });*/
     }
+
 
     @SuppressLint("NonConstantResourceId")
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.action_add:
-                openNoteDetailFragment(true);
-                return true;
-            case R.id.action_sort_none:
+        if (item.getItemId() == R.id.action_add) {
+            openNoteDetailFragment(true);
+            return true;
+/*            case R.id.action_sort_none:
                 Toast.makeText(getContext(), "Sort none will be implemented later...", Toast.LENGTH_SHORT).show();
                 return true;
             case R.id.action_sort_ascending:
@@ -188,7 +189,7 @@ public class NoteTitlesFragment extends Fragment {
                 return true;
             case R.id.action_sort_descending:
                 Toast.makeText(getContext(), "Sort descending will be implemented later...", Toast.LENGTH_SHORT).show();
-                return true;
+                return true;*/
         }
         return super.onOptionsItemSelected(item);
     }
